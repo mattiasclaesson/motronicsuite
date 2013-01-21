@@ -65,6 +65,9 @@
     <Compile Include="CAN\ICANListener.cs" />
     <Compile Include="CAN\Lawicel_canusb.cs" />
     <Compile Include="CAN\LPCCANDevice_ME7.cs" />
+    <Compile Include="DumbKLineDevice.cs" />
+    <Compile Include="IKLineDevice.cs" />
+    <Compile Include="M2103Communication.cs" />
     <Compile Include="ME7KLineCommunication.cs" />
     <Compile Include="M44NEWCommunication.cs" />
     <Compile Include="ICommunication.cs" />
@@ -76,6 +79,7 @@
     <Compile Include="ME7Communication.cs" />
     <Compile Include="ME7SBL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SAEJ1979.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
