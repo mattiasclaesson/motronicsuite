@@ -6,7 +6,7 @@ using System.Text;
 
 namespace MotronicCommunication
 {
-    class M2103Communication : ICommunication
+    public class M2103Communication : ICommunication
     {
         public static int INIT_ECU_ADDR = 0x13;
         public static int ECU_BAUDRATE = 9600;

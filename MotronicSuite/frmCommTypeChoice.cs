@@ -50,5 +50,12 @@ namespace MotronicSuite
             _commType = 3; // 3 = Motronic ME7
             this.Close();
         }
+
+        private void simpleButton5_Click(object sender, EventArgs e)
+        {
+            this.DialogResult = DialogResult.OK;
+            _commType = 4; // 4 = Motronic 2.10.3
+            this.Close();
+        }
     }
 }

@@ -5699,6 +5699,10 @@ Axis Column: XDFTABLE_Id                 * */
                             _ecucomms = new ME7Communication();
                             _ecucomms.setCANDevice("LAWICEL"); //TODO: For now, make this a setting!
                         }
+                        else if (commchoice.CommType == 4)
+                        {
+                            _ecucomms = new M2103Communication();
+                        }
                     }
                 }
                 if (_ecucomms != null)

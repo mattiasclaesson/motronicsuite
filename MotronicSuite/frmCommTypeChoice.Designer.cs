@@ -32,6 +32,7 @@ namespace MotronicSuite
             this.simpleButton2 = new DevExpress.XtraEditors.SimpleButton();
             this.simpleButton3 = new DevExpress.XtraEditors.SimpleButton();
             this.simpleButton4 = new DevExpress.XtraEditors.SimpleButton();
+            this.simpleButton5 = new DevExpress.XtraEditors.SimpleButton();
             this.SuspendLayout();
             // 
             // simpleButton1
@@ -55,7 +56,7 @@ namespace MotronicSuite
             // simpleButton3
             // 
             this.simpleButton3.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.simpleButton3.Location = new System.Drawing.Point(12, 189);
+            this.simpleButton3.Location = new System.Drawing.Point(12, 248);
             this.simpleButton3.Name = "simpleButton3";
             this.simpleButton3.Size = new System.Drawing.Size(326, 53);
             this.simpleButton3.TabIndex = 2;
@@ -71,13 +72,23 @@ namespace MotronicSuite
             this.simpleButton4.Text = "Motronic ME7";
             this.simpleButton4.Click += new System.EventHandler(this.simpleButton4_Click);
             // 
+            // simpleButton5
+            // 
+            this.simpleButton5.Location = new System.Drawing.Point(12, 189);
+            this.simpleButton5.Name = "simpleButton5";
+            this.simpleButton5.Size = new System.Drawing.Size(326, 53);
+            this.simpleButton5.TabIndex = 4;
+            this.simpleButton5.Text = "Motronic 2.10.3";
+            this.simpleButton5.Click += new System.EventHandler(this.simpleButton5_Click);
+            // 
             // frmCommTypeChoice
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.simpleButton3;
-            this.ClientSize = new System.Drawing.Size(353, 254);
+            this.ClientSize = new System.Drawing.Size(353, 313);
             this.ControlBox = false;
+            this.Controls.Add(this.simpleButton5);
             this.Controls.Add(this.simpleButton4);
             this.Controls.Add(this.simpleButton3);
             this.Controls.Add(this.simpleButton2);
@@ -96,5 +107,6 @@ namespace MotronicSuite
         private DevExpress.XtraEditors.SimpleButton simpleButton2;
         private DevExpress.XtraEditors.SimpleButton simpleButton3;
         private DevExpress.XtraEditors.SimpleButton simpleButton4;
+        private DevExpress.XtraEditors.SimpleButton simpleButton5;
     }
 }

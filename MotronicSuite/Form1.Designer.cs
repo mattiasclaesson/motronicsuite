@@ -793,7 +793,6 @@ namespace MotronicSuite
             // btnToggleRealtimePanel
             // 
             this.btnToggleRealtimePanel.Caption = "Show/hide realtime panel";
-            this.btnToggleRealtimePanel.Enabled = false;
             this.btnToggleRealtimePanel.Id = 70;
             this.btnToggleRealtimePanel.ItemShortcut = new DevExpress.XtraBars.BarShortcut((System.Windows.Forms.Keys.Shift | System.Windows.Forms.Keys.F1));
             this.btnToggleRealtimePanel.Name = "btnToggleRealtimePanel";
@@ -1219,13 +1218,13 @@ namespace MotronicSuite
             this.gaugeLoad.BevelLineColor = System.Drawing.Color.Gray;
             this.gaugeLoad.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.gaugeLoad.EndColor = System.Drawing.Color.OrangeRed;
-            this.gaugeLoad.Font = new System.Drawing.Font("Eurostile", 12F, System.Drawing.FontStyle.Bold);
+            this.gaugeLoad.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
             this.gaugeLoad.GaugeText = "Internal load";
             this.gaugeLoad.GaugeUnits = "ms";
             this.gaugeLoad.HighlightOpaqueEnd = ((byte)(30));
             this.gaugeLoad.HighlightOpaqueStart = ((byte)(100));
             this.gaugeLoad.Location = new System.Drawing.Point(0, 237);
-            this.gaugeLoad.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.gaugeLoad.Margin = new System.Windows.Forms.Padding(4);
             this.gaugeLoad.MaxValue = 12.5F;
             this.gaugeLoad.Name = "gaugeLoad";
             this.gaugeLoad.NumberOfDecimals = 2;
@@ -1623,7 +1622,7 @@ namespace MotronicSuite
             // 
             this.xtraTabPage2.Controls.Add(this.gridControl2);
             this.xtraTabPage2.Name = "xtraTabPage2";
-            this.xtraTabPage2.Size = new System.Drawing.Size(346, 329);
+            this.xtraTabPage2.Size = new System.Drawing.Size(406, 333);
             this.xtraTabPage2.Text = "Support points";
             // 
             // gridControl2
@@ -1632,7 +1631,7 @@ namespace MotronicSuite
             this.gridControl2.Location = new System.Drawing.Point(0, 0);
             this.gridControl2.MainView = this.gridView1;
             this.gridControl2.Name = "gridControl2";
-            this.gridControl2.Size = new System.Drawing.Size(346, 329);
+            this.gridControl2.Size = new System.Drawing.Size(406, 333);
             this.gridControl2.TabIndex = 1;
             this.gridControl2.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.gridView1});

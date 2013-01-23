@@ -6,11 +6,13 @@ using System.IO.Ports;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Timers;
+using System.Diagnostics;
+using MicroLibrary;
 
 namespace MotronicCommunication
 {
 
-    class DumbKLineDevice : IKLineDevice
+    class DumbKLineDevice
     {
         public enum CommunicationState : int
         {
@@ -26,6 +28,8 @@ namespace MotronicCommunication
         public static int BYTE_LENGTH = 8;
         public static int BIT_INTERVAL_5B = 200;
         public static int SYNC_BYTE = 0x55;
+        public static int P4MIN = 5 + 1;
+        public static int IDLE_TIMEOUT = 300; // 3 seconds
 
 
         [DllImport("winmm.dll", EntryPoint = "timeBeginPeriod")]
@@ -35,13 +39,16 @@ namespace MotronicCommunication
 
         private SerialPort _port = new SerialPort();
         private System.Timers.Timer _timer;
+        private MicroTimer _microTimer;
 
+        private int _startctr = 0;
         private bool _initIsDone = false;
         private int _ecuaddr = 0x33;
         private int _baudrate = 10400;
         private int _timeout = 0;
         private int _wakeupRetries = 1;
         private bool _echo = false;
+        private bool _idlesent = false;
 
         private bool _syncseen = false;
         private bool _kw1seen = false;
@@ -51,9 +58,51 @@ namespace MotronicCommunication
         private byte _kw1;
         private byte _kw2;
 
+        private List<byte> _sendMsg;
+        private List<byte> _idleMsg;
+        private int _sendctr = 0;
+
+        private List<byte> _rcvMsg;
+
+        private Stopwatch _stopWatch = new Stopwatch();
+        private static AutoResetEvent _event = new AutoResetEvent(false);
+
         private CommunicationState _state = CommunicationState.Start;
 
-        public override bool slowInit(string comportnumber, int ecuaddr, int baudrate)
+        public void setIdleMessage(List<byte> msg)
+        {
+            _idleMsg = msg;
+        }
+
+        public bool send(List<byte> msg)
+        {
+            if (_state == CommunicationState.SendCommand || _state == CommunicationState.WaitForResponse)
+            {
+                //already sending something (idle message)
+                Console.WriteLine("already sending something (idle message)");
+                return false;
+            }
+
+            _timeout = 0;
+            _sendMsg = msg;
+            _sendctr = 0;
+            _state = CommunicationState.SendCommand;
+            _microTimer.Interval = P4MIN * 1000;
+            _microTimer.Enabled = true;
+
+            return true;
+        }
+
+        public List<byte> receive()
+        {
+            _event.WaitOne();
+
+            List<byte> msg = _rcvMsg;
+
+            return msg;
+        }
+
+        public bool slowInit(string comportnumber, int ecuaddr, int baudrate)
         {
             _ecuaddr = ecuaddr;
             _baudrate = baudrate;
@@ -65,6 +114,12 @@ namespace MotronicCommunication
 
                     _timer = new System.Timers.Timer(10);
                     _timer.Elapsed += new ElapsedEventHandler(_timer_Elapsed);
+
+                    //micro timer is used for precise events such as the 5baud init
+                    //sleep is not accurate enough with all computers even with MM period set to 1ms
+                    _microTimer = new MicroTimer(BIT_INTERVAL_5B * 1000);
+                    _microTimer.MicroTimerElapsed += new MicroLibrary.MicroTimer.MicroTimerElapsedEventHandler(microTimerEvent);
+
                     if (_port.IsOpen) _port.Close();
                     _port.Encoding = Encoding.GetEncoding("ISO-8859-1");
                     _port.BaudRate = 5;
@@ -83,25 +138,29 @@ namespace MotronicCommunication
                     {
                         //AddToLog("Failed to set pins: " + E.Message);
                     }
-                    MM_BeginPeriod(1);
-                    Thread.CurrentThread.Priority = ThreadPriority.AboveNormal; // high prio thread
+                    //no need for this anymore
+                    //MM_BeginPeriod(1);
+                    //Thread.CurrentThread.Priority = ThreadPriority.AboveNormal; // high prio thread
                     _initIsDone = true;
                 }
                 else
                 {
-                    MM_BeginPeriod(1);
+                    //MM_BeginPeriod(1);
                     if (_port.IsOpen) _port.Close();
-                    _port.BaudRate = 5;
+                    _port.BaudRate = _baudrate;
                     _port.PortName = comportnumber;
                     _port.Open();
                 }
+
                 _timer.Enabled = true;
+                _microTimer.Enabled = true;
                 return true;
             }
             catch (Exception E)
             {
                 //_ecustate = ECUState.NotInitialized;
                 //CastInfoEvent("Failed to initialize KWP71: " + E.Message, 0);
+                Console.WriteLine("Failed to initialize KWP71: " + E.Message);
             }
             return false;
         }
@@ -115,7 +174,7 @@ namespace MotronicCommunication
         {
             try
             {
-                MM_EndPeriod(1);
+                //MM_EndPeriod(1);
                 if (_port.IsOpen) _port.Close();
             }
             catch (Exception E)
@@ -125,6 +184,7 @@ namespace MotronicCommunication
 
         }
 
+        /*
         private void sendAt5Baud(int addr)
         {
             //set start bit (line low --> break true)
@@ -134,7 +194,11 @@ namespace MotronicCommunication
             int i = 0;
             for (i = 0; i < BYTE_LENGTH; ++i)
             {
-                if ((addr & (1 << i)) == 1)
+                //_stopWatch.Stop();
+                //Console.WriteLine("5Baud interval was " + _stopWatch.Elapsed.TotalMilliseconds + " ms");
+                //_stopWatch.Reset();
+                //_stopWatch.Start();
+                if ((addr & (1 << i)) > 0)
                 {
                     //set line high
                     _port.BreakState = false;
@@ -146,11 +210,112 @@ namespace MotronicCommunication
                 }
                 Thread.Sleep(BIT_INTERVAL_5B);
             }
+            //_stopWatch.Reset();
 
             //set stop bit
             _port.BreakState = false;
             Thread.Sleep(BIT_INTERVAL_5B);
 
+
+        }
+        */
+
+        private void handle5BaudTimer()
+        {
+            //_stopWatch.Stop();
+            //TimeSpan ts = _stopWatch.Elapsed;
+            //Console.WriteLine("5baud microtimer interval was " + ts.TotalMilliseconds + " ms");
+            //_stopWatch.Reset();
+            //_stopWatch.Start();
+
+            if (_startctr == 0)
+            {
+                //start bit
+                _port.BreakState = true;
+            }
+            else if (_startctr == 9)
+            {
+                //stop bit
+                _port.BreakState = false;
+
+            }
+            else if (_startctr == 10)
+            {
+                _stopWatch.Reset();
+                _state = CommunicationState.WaitForKeywords;
+
+                _port.BaudRate = _baudrate;
+                _timeout = 0;
+                _startctr = 0;
+                _microTimer.Enabled = false;
+            }
+            else
+            {
+                if ((_ecuaddr & (1 << (_startctr - 1))) > 0)
+                {
+                    //set line high
+                    //Console.WriteLine("HIGH");
+                    _port.BreakState = false;
+                }
+                else
+                {
+                    //set line low
+                    //Console.WriteLine("LOW");
+                    _port.BreakState = true;
+                }
+            }
+            ++_startctr;
+        }
+
+        private void microTimerEvent(object sender, MicroLibrary.MicroTimerEventArgs timerEventArgs)
+        {
+            if (_port.IsOpen)
+            {
+                try
+                {
+                    switch (_state)
+                    {
+                        case CommunicationState.Start:
+                            //_ecustate = ECUState.NotInitialized;
+                            //CastInfoEvent("Sending init/wakeup sequence [" + _wakeupRetries.ToString() + "/5]", 0);
+                            //_port.BaudRate = 5;
+
+                            handle5BaudTimer();
+
+                            break;
+
+                        case CommunicationState.SendCommand:
+                            //_stopWatch.Stop();
+                            //TimeSpan ts = _stopWatch.Elapsed;
+                            //Console.WriteLine("byte interval was " + ts.TotalMilliseconds + " ms");
+                            //_stopWatch.Reset();
+                            //_stopWatch.Start();
+
+                            byte[] b = new byte[1];
+                            b[0] = _sendMsg[_sendctr];
+                            _port.Write(b, 0, 1);
+                            _echo = true; // ignore the echo byte that will be coming
+
+                            ++_sendctr;
+                            if (_sendctr >= _sendMsg.Count)
+                            {
+                                //_sendMsg.Clear();
+                                _timeout = 0;
+                                _state = CommunicationState.WaitForResponse;
+                                _sendctr = 0;
+                                _microTimer.Enabled = false;
+                                Console.WriteLine("Finished sending");
+                            }
+
+                            break;
+                    }
+                }
+                catch (Exception E)
+                {
+                    //AddToLog(E.Message);
+                    Console.WriteLine(E.Message);
+                }
+            }
         }
 
         private void _timer_Elapsed(object sender, ElapsedEventArgs e)
@@ -167,12 +332,18 @@ namespace MotronicCommunication
                             //CastInfoEvent("Sending init/wakeup sequence [" + _wakeupRetries.ToString() + "/5]", 0);
                             //_port.BaudRate = 5;
 
-                            sendAt5Baud(_ecuaddr);
+                            //Console.WriteLine("Starting 5baud init!");
 
-                            _state = CommunicationState.WaitForKeywords;
+                            //sendAt5Baud(_ecuaddr);
 
-                            _port.BaudRate = _baudrate;
-                            _timeout = 0;
+                            //_state = CommunicationState.WaitForKeywords;
+
+                            //_port.BaudRate = _baudrate;
+                            //_timeout = 0;
+
+                            //not used currently...
+                            //handle5BaudTimer()
+
                             break;
                         case CommunicationState.WaitForKeywords:
                             if (_timeout == 0 || _timeout == 100 || _timeout == 200 || _timeout == 300 || _timeout == 400 || _timeout == 500)
@@ -185,6 +356,7 @@ namespace MotronicCommunication
                                 //_ecustate = ECUState.NotInitialized;
                                 //CastInfoEvent("Timeout waiting for keywords", 0);
                                 _state = CommunicationState.Start;
+                                Console.WriteLine("Timeout waiting for keywords");
                                 _timeout = 0;
                                 _wakeupRetries++;
                                 if (_wakeupRetries == 6)
@@ -195,14 +367,51 @@ namespace MotronicCommunication
                                     //CastInfoEvent("Unable to connect to ECU", 0);
                                     return; // don't restart the timer
                                 }
+                                _microTimer.Enabled = true;
                             }
                             // timeout?
+                            break;
+
+                        case CommunicationState.Idle:
+                            if (_timeout++ > IDLE_TIMEOUT)
+                            {
+                                //send the idle message to prevent the connection from closing
+                                Console.WriteLine("send the idle message");
+                                _idlesent = true;
+                                _timeout = 0;
+                                _sendMsg = _idleMsg;
+                                _sendctr = 0;
+                                _state = CommunicationState.SendCommand;
+                                _microTimer.Interval = P4MIN * 1000;
+                                _microTimer.Enabled = true;
+                            }
+
+                            break;
+
+                        case CommunicationState.WaitForResponse:
+                            ++_timeout;
+                            if (_timeout == 6)
+                            {
+                                _timeout = 0;
+                                _state = CommunicationState.Idle;
+
+                                //inform that complete message arrived
+                                if (_idlesent == false)
+                                {
+                                    _event.Set();
+                                }
+                                else
+                                {
+                                    _idlesent = false;
+                                }
+                            }
                             break;
                     }
                 }
                 catch (Exception E)
                 {
                     //AddToLog(E.Message);
+                    Console.WriteLine(E.Message);
                 }
             }
             _timer.Enabled = true;
@@ -220,11 +429,21 @@ namespace MotronicCommunication
             }
         }
 
+        private void receiveByte(byte b)
+        {
+            _rcvMsg.Add(b);
+            _timeout = 0;
+        }
+
         private void HandleInitByte(byte b)
         {
             if (!_syncseen)
             {
-                if (b == SYNC_BYTE) _syncseen = true;
+                if (b == SYNC_BYTE)
+                {
+                    _syncseen = true;
+                    Console.WriteLine("Sync byte received!");
+                }
                 //CastInfoEvent("Synchronization in progress", 0);
             }
             else
@@ -240,6 +459,7 @@ namespace MotronicCommunication
                     _kw2 = b;
                     //TODO: need to apply W4 delay (25-50ms) before sending this?
                     SendAck(_kw2, true);
+                    Console.WriteLine("Keywords: " + _kw1.ToString("X2") + _kw2.ToString("X2"));
                     //AddToLog("kw1: " + kw1.ToString("X2") + " kw2: " + kw2.ToString("X2"));
                     //AddToLog("Entering idle state");
                 }
@@ -247,6 +467,8 @@ namespace MotronicCommunication
                 {
                     _invaddrseen = true;
                     _state = CommunicationState.Idle;
+                    _timeout = 0;
+                    Console.WriteLine("Inverted address received!");
                 }
             }
             
@@ -260,6 +482,8 @@ namespace MotronicCommunication
                 string rxdata = _port.ReadExisting();
                 for (int t = 0; t < rxdata.Length; t++)
                 {
+                    byte b = Convert.ToByte(rxdata[t]);
+
                     if (_echo)
                     {
                         //ignore received echo
@@ -267,14 +491,14 @@ namespace MotronicCommunication
                         continue;
                     }
 
-                    byte b = Convert.ToByte(rxdata[t]);
+                    Console.WriteLine("Received: " + b.ToString("X2"));
                     if (_state == CommunicationState.Start || _state == CommunicationState.WaitForKeywords)
                     {
-                            HandleInitByte(b);
+                        HandleInitByte(b);
                     }
                     else
 	                {
-
+                        receiveByte(b);
 	                }
 
                 }
