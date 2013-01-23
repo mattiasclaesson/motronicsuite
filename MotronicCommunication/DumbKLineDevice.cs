@@ -62,7 +62,7 @@ namespace MotronicCommunication
         private List<byte> _idleMsg;
         private int _sendctr = 0;
 
-        private List<byte> _rcvMsg;
+        private List<byte> _rcvMsg = new List<byte>();
 
         private Stopwatch _stopWatch = new Stopwatch();
         private static AutoResetEvent _event = new AutoResetEvent(false);
@@ -98,6 +98,7 @@ namespace MotronicCommunication
             _event.WaitOne();
 
             List<byte> msg = _rcvMsg;
+            _rcvMsg.Clear();
 
             return msg;
         }
@@ -293,8 +294,9 @@ namespace MotronicCommunication
 
                             byte[] b = new byte[1];
                             b[0] = _sendMsg[_sendctr];
-                            _port.Write(b, 0, 1);
                             _echo = true; // ignore the echo byte that will be coming
+                            _port.Write(b, 0, 1);
+                            
 
                             ++_sendctr;
                             if (_sendctr >= _sendMsg.Count)
@@ -403,6 +405,7 @@ namespace MotronicCommunication
                                 else
                                 {
                                     _idlesent = false;
+                                    _rcvMsg.Clear();
                                 }
                             }
                             break;
