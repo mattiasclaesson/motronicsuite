@@ -7,7 +7,14 @@ namespace MotronicCommunication
 {
     class SAEJ1979
     {
-        private DumbKLineDevice m_dev = new DumbKLineDevice();
+        private DumbKLineDevice m_dev;
+        private M2103Communication m_comm;
+
+        public SAEJ1979(M2103Communication comm)
+        {
+            m_comm = comm;
+            m_dev = new DumbKLineDevice(m_comm);
+        }
 
         public void initialize(string comportnumber, int ecuaddr, int baudrate)
         {

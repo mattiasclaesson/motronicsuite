@@ -37,6 +37,8 @@ namespace MotronicCommunication
         [DllImport("winmm.dll", EntryPoint = "timeEndPeriod")]
         public static extern uint MM_EndPeriod(uint uMilliseconds);
 
+        private ICommunication.ECUState _ecustate = ICommunication.ECUState.NotInitialized;
+
         private SerialPort _port = new SerialPort();
         private System.Timers.Timer _timer;
         private MicroTimer _microTimer;
@@ -47,7 +49,7 @@ namespace MotronicCommunication
         private int _baudrate = 10400;
         private int _timeout = 0;
         private int _wakeupRetries = 1;
-        private bool _echo = false;
+        private int _echo = 0;
         private bool _idlesent = false;
 
         private bool _syncseen = false;
@@ -68,6 +70,12 @@ namespace MotronicCommunication
         private static AutoResetEvent _event = new AutoResetEvent(false);
 
         private CommunicationState _state = CommunicationState.Start;
+
+        private M2103Communication _comm;
+        public DumbKLineDevice(M2103Communication comm)
+        {
+            _comm = comm;
+        }
 
         public void setIdleMessage(List<byte> msg)
         {
@@ -155,13 +163,14 @@ namespace MotronicCommunication
 
                 _timer.Enabled = true;
                 _microTimer.Enabled = true;
+
                 return true;
             }
             catch (Exception E)
             {
-                //_ecustate = ECUState.NotInitialized;
-                //CastInfoEvent("Failed to initialize KWP71: " + E.Message, 0);
-                Console.WriteLine("Failed to initialize KWP71: " + E.Message);
+                _ecustate = ICommunication.ECUState.NotInitialized;
+                CastInfoEvent("Failed to initialize: " + E.Message, 0);
+                Console.WriteLine("Failed to initialize: " + E.Message);
             }
             return false;
         }
@@ -231,6 +240,8 @@ namespace MotronicCommunication
 
             if (_startctr == 0)
             {
+                _ecustate = ICommunication.ECUState.NotInitialized;
+                CastInfoEvent("Sending init/wakeup sequence [" + _wakeupRetries.ToString() + "/5]", 0);
                 //start bit
                 _port.BreakState = true;
             }
@@ -277,12 +288,7 @@ namespace MotronicCommunication
                     switch (_state)
                     {
                         case CommunicationState.Start:
-                            //_ecustate = ECUState.NotInitialized;
-                            //CastInfoEvent("Sending init/wakeup sequence [" + _wakeupRetries.ToString() + "/5]", 0);
-                            //_port.BaudRate = 5;
-
                             handle5BaudTimer();
-
                             break;
 
                         case CommunicationState.SendCommand:
@@ -294,7 +300,7 @@ namespace MotronicCommunication
 
                             byte[] b = new byte[1];
                             b[0] = _sendMsg[_sendctr];
-                            _echo = true; // ignore the echo byte that will be coming
+                            ++_echo; // ignore the echo byte that will be coming
                             _port.Write(b, 0, 1);
                             
 
@@ -351,14 +357,14 @@ namespace MotronicCommunication
                             if (_timeout == 0 || _timeout == 100 || _timeout == 200 || _timeout == 300 || _timeout == 400 || _timeout == 500)
                             {
                                 int secs = _timeout / 100;
-                                //CastInfoEvent("Waiting for keywords from ECU (" + secs.ToString() + "/5 seconds)", 0);
+                                CastInfoEvent("Waiting for keywords from ECU (" + secs.ToString() + "/5 seconds)", 0);
                             }
                             if (_timeout++ > 500)
                             {
-                                //_ecustate = ECUState.NotInitialized;
-                                //CastInfoEvent("Timeout waiting for keywords", 0);
-                                _state = CommunicationState.Start;
+                                _ecustate = ICommunication.ECUState.NotInitialized;
+                                CastInfoEvent("Timeout waiting for keywords", 0);
                                 Console.WriteLine("Timeout waiting for keywords");
+                                _state = CommunicationState.Start;
                                 _timeout = 0;
                                 _wakeupRetries++;
                                 if (_wakeupRetries == 6)
@@ -366,7 +372,7 @@ namespace MotronicCommunication
                                     _wakeupRetries = 1;
 
                                     stop();
-                                    //CastInfoEvent("Unable to connect to ECU", 0);
+                                    CastInfoEvent("Unable to connect to ECU", 0);
                                     return; // don't restart the timer
                                 }
                                 _microTimer.Enabled = true;
@@ -378,7 +384,7 @@ namespace MotronicCommunication
                             if (_timeout++ > IDLE_TIMEOUT)
                             {
                                 //send the idle message to prevent the connection from closing
-                                Console.WriteLine("send the idle message");
+                                Console.WriteLine("Send the idle message");
                                 _idlesent = true;
                                 _timeout = 0;
                                 _sendMsg = _idleMsg;
@@ -394,6 +400,7 @@ namespace MotronicCommunication
                             ++_timeout;
                             if (_timeout == 6)
                             {
+                                Console.WriteLine("Receiving finished");
                                 _timeout = 0;
                                 _state = CommunicationState.Idle;
 
@@ -428,7 +435,7 @@ namespace MotronicCommunication
             if (_port.IsOpen)
             {
                 _port.Write(b2send, 0, 1);
-                _echo = true; // ignore the echo byte that will be coming
+                ++_echo; // ignore the echo byte that will be coming
             }
         }
 
@@ -471,6 +478,8 @@ namespace MotronicCommunication
                     _invaddrseen = true;
                     _state = CommunicationState.Idle;
                     _timeout = 0;
+                    _ecustate = ICommunication.ECUState.CommunicationRunning;
+                    CastInfoEvent("Communication ready", 0);
                     Console.WriteLine("Inverted address received!");
                 }
             }
@@ -487,10 +496,10 @@ namespace MotronicCommunication
                 {
                     byte b = Convert.ToByte(rxdata[t]);
 
-                    if (_echo)
+                    if (_echo > 0)
                     {
                         //ignore received echo
-                        _echo = false;
+                        --_echo;
                         continue;
                     }
 
@@ -506,6 +515,12 @@ namespace MotronicCommunication
 
                 }
             }
+        }
+
+        //sorry for this hack...
+        private void CastInfoEvent(string information, int percentage)
+        {
+            _comm.CastInfoEvent(information, percentage, _ecustate);
         }
     }
 }

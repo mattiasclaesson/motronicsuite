@@ -12,16 +12,18 @@ namespace MotronicCommunication
         public static int ECU_BAUDRATE = 9600;
 
         public override event ICommunication.DTCInfo onDTCInfo;
-        public override event ICommunication.ECUInfo onECUInfo;
-        public override event ICommunication.StatusChanged onStatusChanged;
+        public override event ICommunication.ECUInfo onECUInfo; //not so important
+        public override event ICommunication.StatusChanged onStatusChanged; //important
 
-        private ECUState _ecustate = ECUState.NotInitialized;
+        private SAEJ1979 m_j1979;
+
+        public M2103Communication()
+        {
+            m_j1979 = new SAEJ1979(this);
+        }
 
 
-        private SAEJ1979 m_j1979 = new SAEJ1979();
-
-
-        private bool _communicationRunning = false;
+        private bool _communicationRunning = false; //important
         public override bool CommunicationRunning
         {
             get { return _communicationRunning; }
@@ -29,7 +31,7 @@ namespace MotronicCommunication
         }
 
         private bool _IsWaitingForResponse = false;
-        public override bool IsWaitingForResponse
+        public override bool IsWaitingForResponse //rt timer tick needs this
         {
             get { return _IsWaitingForResponse; }
             set { _IsWaitingForResponse = value; }
@@ -80,12 +82,37 @@ namespace MotronicCommunication
 
         public override void StartCommunication(string comportnumber, bool HighSpeed)
         {
-            m_j1979.initialize(comportnumber, INIT_ECU_ADDR, ECU_BAUDRATE);
+            //m_j1979.initialize(comportnumber, INIT_ECU_ADDR, ECU_BAUDRATE);
+            m_j1979.initialize(comportnumber, 0x33, 10400);
         }
 
         public override void StopCommunication()
         {
             _communicationRunning = false;
+        }
+
+        public void CastECUInfoEvent(int idnumber, string info)
+        {
+            if (onECUInfo != null)
+            {
+                onECUInfo(this, new ECUInfoEventArgs(info, idnumber));
+            }
+        }
+
+        public void CastDTCInfo(int dtcCode, int dtcState, int dtcCondition1, int dtcCondition2, int dtcCounter)
+        {
+            if (onDTCInfo != null)
+            {
+                onDTCInfo(this, new DTCEventArgs(dtcCode, dtcState, dtcCondition1, dtcCondition2, dtcCounter));
+            }
+        }
+
+        public void CastInfoEvent(string information, int percentage, ECUState ecustate)
+        {
+            if (onStatusChanged != null)
+            {
+                onStatusChanged(this, new StatusEventArgs(information, percentage, ecustate));
+            }
         }
 
 
