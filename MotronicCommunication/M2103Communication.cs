@@ -11,17 +11,19 @@ namespace MotronicCommunication
         public static int INIT_ECU_ADDR = 0x13;
         public static int ECU_BAUDRATE = 9600;
 
+        private SAEJ1979 m_j1979 = new SAEJ1979();
+
         public override event ICommunication.DTCInfo onDTCInfo;
-        public override event ICommunication.ECUInfo onECUInfo; //not so important
-        public override event ICommunication.StatusChanged onStatusChanged; //important
-
-        private SAEJ1979 m_j1979;
-
-        public M2103Communication()
+        public override event ICommunication.ECUInfo onECUInfo
         {
-            m_j1979 = new SAEJ1979(this);
+            add { m_j1979.onECUInfo += value; }
+            remove { m_j1979.onECUInfo -= value; }
         }
-
+        public override event ICommunication.StatusChanged onStatusChanged
+        {
+            add { m_j1979.onStatusChanged += value; }
+            remove { m_j1979.onStatusChanged -= value; }
+        }
 
         private bool _communicationRunning = false; //important
         public override bool CommunicationRunning
@@ -88,33 +90,16 @@ namespace MotronicCommunication
 
         public override void StopCommunication()
         {
-            _communicationRunning = false;
+            m_j1979.stop();
         }
 
-        public void CastECUInfoEvent(int idnumber, string info)
-        {
-            if (onECUInfo != null)
-            {
-                onECUInfo(this, new ECUInfoEventArgs(info, idnumber));
-            }
-        }
-
-        public void CastDTCInfo(int dtcCode, int dtcState, int dtcCondition1, int dtcCondition2, int dtcCounter)
+        private void CastDTCInfo(int dtcCode, int dtcState, int dtcCondition1, int dtcCondition2, int dtcCounter)
         {
             if (onDTCInfo != null)
             {
                 onDTCInfo(this, new DTCEventArgs(dtcCode, dtcState, dtcCondition1, dtcCondition2, dtcCounter));
             }
         }
-
-        public void CastInfoEvent(string information, int percentage, ECUState ecustate)
-        {
-            if (onStatusChanged != null)
-            {
-                onStatusChanged(this, new StatusEventArgs(information, percentage, ecustate));
-            }
-        }
-
 
     }
 }

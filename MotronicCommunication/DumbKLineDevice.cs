@@ -37,8 +37,11 @@ namespace MotronicCommunication
         [DllImport("winmm.dll", EntryPoint = "timeEndPeriod")]
         public static extern uint MM_EndPeriod(uint uMilliseconds);
 
-        private ICommunication.ECUState _ecustate = ICommunication.ECUState.NotInitialized;
+        public event ICommunication.StatusChanged onStatusChanged;
+        public event ICommunication.ECUInfo onECUInfo;
 
+        private ICommunication.ECUState _ecustate = ICommunication.ECUState.NotInitialized;
+ 
         private SerialPort _port = new SerialPort();
         private System.Timers.Timer _timer;
         private MicroTimer _microTimer;
@@ -70,12 +73,6 @@ namespace MotronicCommunication
         private static AutoResetEvent _event = new AutoResetEvent(false);
 
         private CommunicationState _state = CommunicationState.Start;
-
-        private M2103Communication _comm;
-        public DumbKLineDevice(M2103Communication comm)
-        {
-            _comm = comm;
-        }
 
         public void setIdleMessage(List<byte> msg)
         {
@@ -113,6 +110,7 @@ namespace MotronicCommunication
 
         public bool slowInit(string comportnumber, int ecuaddr, int baudrate)
         {
+            //TODO: clear the state of the class!
             _ecuaddr = ecuaddr;
             _baudrate = baudrate;
 
@@ -163,7 +161,6 @@ namespace MotronicCommunication
 
                 _timer.Enabled = true;
                 _microTimer.Enabled = true;
-
                 return true;
             }
             catch (Exception E)
@@ -480,11 +477,10 @@ namespace MotronicCommunication
                     _timeout = 0;
                     _ecustate = ICommunication.ECUState.CommunicationRunning;
                     CastInfoEvent("Communication ready", 0);
+                    CastECUInfoEvent(3, "M2.10.3"); //a bit of hack but works
                     Console.WriteLine("Inverted address received!");
                 }
             }
-            
-  
         }
 
         private void _port_DataReceived(object sender, SerialDataReceivedEventArgs e)
@@ -517,10 +513,20 @@ namespace MotronicCommunication
             }
         }
 
-        //sorry for this hack...
+        private void CastECUInfoEvent(int idnumber, string info)
+        {
+            if (onECUInfo != null)
+            {
+                onECUInfo(this, new ICommunication.ECUInfoEventArgs(info, idnumber));
+            }
+        }
+
         private void CastInfoEvent(string information, int percentage)
         {
-            _comm.CastInfoEvent(information, percentage, _ecustate);
+            if (onStatusChanged != null)
+            {
+                onStatusChanged(this, new ICommunication.StatusEventArgs(information, percentage, _ecustate));
+            }
         }
     }
 }

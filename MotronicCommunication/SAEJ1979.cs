@@ -7,13 +7,25 @@ namespace MotronicCommunication
 {
     class SAEJ1979
     {
-        private DumbKLineDevice m_dev;
-        private M2103Communication m_comm;
+        private DumbKLineDevice m_dev = new DumbKLineDevice();
 
-        public SAEJ1979(M2103Communication comm)
+        public event ICommunication.DTCInfo onDTCInfo;
+        public event ICommunication.ECUInfo onECUInfo
         {
-            m_comm = comm;
-            m_dev = new DumbKLineDevice(m_comm);
+            add { m_dev.onECUInfo += value; }
+            remove { m_dev.onECUInfo -= value; }
+        }
+        public event ICommunication.StatusChanged onStatusChanged
+        {
+            add { m_dev.onStatusChanged += value; }
+            remove { m_dev.onStatusChanged -= value; }
+        }
+
+        private bool _communicationRunning = false; //important
+        public bool CommunicationRunning
+        {
+            get { return _communicationRunning; }
+            set { _communicationRunning = value; }
         }
 
         public void initialize(string comportnumber, int ecuaddr, int baudrate)
@@ -22,7 +34,17 @@ namespace MotronicCommunication
             msg.Add(calculateCS(msg));
 
             m_dev.setIdleMessage(msg);
-            m_dev.slowInit(comportnumber, ecuaddr, baudrate);
+
+            if (m_dev.slowInit(comportnumber, ecuaddr, baudrate))
+            {
+                _communicationRunning = true;
+            }
+        }
+
+        public void stop()
+        {
+            m_dev.stop();
+            _communicationRunning = false;
         }
 
         public void requestDiagnosticData(int pid)
