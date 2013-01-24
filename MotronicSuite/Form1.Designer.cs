@@ -185,8 +185,29 @@ namespace MotronicSuite
             this.gridColumn8 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.gridColumn10 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.gridColumn7 = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.dockRealtimeM2103 = new DevExpress.XtraBars.Docking.DockPanel();
+            this.controlContainer1 = new DevExpress.XtraBars.Docking.ControlContainer();
+            this.gaugeRPMM2103 = new ProGauges.CombiGauge();
+            this.labelControl6 = new DevExpress.XtraEditors.LabelControl();
+            this.gaugeIgnM2103 = new ProGauges.CombiGauge();
+            this.labelControl5 = new DevExpress.XtraEditors.LabelControl();
+            this.linearGauge1 = new ProGauges.LinearGauge();
             this.defaultLookAndFeel1 = new DevExpress.LookAndFeel.DefaultLookAndFeel(this.components);
             this.tmrRealtime = new System.Windows.Forms.Timer(this.components);
+            this.gaugeCoolantM2103 = new ProGauges.CombiGauge();
+            this.labelControl7 = new DevExpress.XtraEditors.LabelControl();
+            this.gaugeThrottleM2103 = new ProGauges.CombiGauge();
+            this.labelControl8 = new DevExpress.XtraEditors.LabelControl();
+            this.combiGauge5 = new ProGauges.CombiGauge();
+            this.labelControl9 = new DevExpress.XtraEditors.LabelControl();
+            this.combiGauge6 = new ProGauges.CombiGauge();
+            this.labelControl10 = new DevExpress.XtraEditors.LabelControl();
+            this.combiGauge7 = new ProGauges.CombiGauge();
+            this.labelControl11 = new DevExpress.XtraEditors.LabelControl();
+            this.combiGauge8 = new ProGauges.CombiGauge();
+            this.labelControl12 = new DevExpress.XtraEditors.LabelControl();
+            this.combiGauge9 = new ProGauges.CombiGauge();
+            this.labelControl13 = new DevExpress.XtraEditors.LabelControl();
             ((System.ComponentModel.ISupportInitialize)(this.ribbonControl1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.repositoryItemProgressBar1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dockManager1)).BeginInit();
@@ -210,6 +231,9 @@ namespace MotronicSuite
             this.xtraTabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gridControl2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridView1)).BeginInit();
+            this.dockRealtimeM2103.SuspendLayout();
+            this.controlContainer1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.linearGauge1)).BeginInit();
             this.SuspendLayout();
             // 
             // ribbonControl1
@@ -309,7 +333,7 @@ namespace MotronicSuite
             this.ribbonPage4});
             this.ribbonControl1.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] {
             this.repositoryItemProgressBar1});
-            this.ribbonControl1.Size = new System.Drawing.Size(1077, 142);
+            this.ribbonControl1.Size = new System.Drawing.Size(1052, 142);
             this.ribbonControl1.StatusBar = this.rbnStatusbar;
             // 
             // barButtonItem1
@@ -1115,16 +1139,17 @@ namespace MotronicSuite
             this.rbnStatusbar.ItemLinks.Add(this.barFilenameText);
             this.rbnStatusbar.ItemLinks.Add(this.barFileTypeIndicator);
             this.rbnStatusbar.ItemLinks.Add(this.barLimiterInfo);
-            this.rbnStatusbar.Location = new System.Drawing.Point(0, 528);
+            this.rbnStatusbar.Location = new System.Drawing.Point(0, 579);
             this.rbnStatusbar.Name = "rbnStatusbar";
             this.rbnStatusbar.Ribbon = this.ribbonControl1;
-            this.rbnStatusbar.Size = new System.Drawing.Size(1077, 28);
+            this.rbnStatusbar.Size = new System.Drawing.Size(1052, 28);
             // 
             // dockManager1
             // 
             this.dockManager1.Form = this;
             this.dockManager1.HiddenPanels.AddRange(new DevExpress.XtraBars.Docking.DockPanel[] {
-            this.dockRealtime});
+            this.dockRealtime,
+            this.dockRealtimeM2103});
             this.dockManager1.RootPanels.AddRange(new DevExpress.XtraBars.Docking.DockPanel[] {
             this.dockPanel1});
             this.dockManager1.TopZIndexControls.AddRange(new string[] {
@@ -1138,12 +1163,12 @@ namespace MotronicSuite
             this.dockRealtime.Controls.Add(this.dockPanel2_Container);
             this.dockRealtime.Dock = DevExpress.XtraBars.Docking.DockingStyle.Left;
             this.dockRealtime.ID = new System.Guid("7f93cc67-3c59-4049-b195-24741498fcd0");
-            this.dockRealtime.Location = new System.Drawing.Point(357, 145);
+            this.dockRealtime.Location = new System.Drawing.Point(416, 142);
             this.dockRealtime.Name = "dockRealtime";
-            this.dockRealtime.OriginalSize = new System.Drawing.Size(0, 0);
+            this.dockRealtime.OriginalSize = new System.Drawing.Size(226, 200);
             this.dockRealtime.SavedDock = DevExpress.XtraBars.Docking.DockingStyle.Left;
             this.dockRealtime.SavedIndex = 1;
-            this.dockRealtime.Size = new System.Drawing.Size(475, 387);
+            this.dockRealtime.Size = new System.Drawing.Size(226, 386);
             this.dockRealtime.Text = "Realtime monitor";
             this.dockRealtime.Visibility = DevExpress.XtraBars.Docking.DockVisibility.Hidden;
             // 
@@ -1151,9 +1176,9 @@ namespace MotronicSuite
             // 
             this.dockPanel2_Container.Controls.Add(this.xtraTabControl2);
             this.dockPanel2_Container.Controls.Add(this.labelControl4);
-            this.dockPanel2_Container.Location = new System.Drawing.Point(3, 29);
+            this.dockPanel2_Container.Location = new System.Drawing.Point(4, 24);
             this.dockPanel2_Container.Name = "dockPanel2_Container";
-            this.dockPanel2_Container.Size = new System.Drawing.Size(469, 355);
+            this.dockPanel2_Container.Size = new System.Drawing.Size(218, 358);
             this.dockPanel2_Container.TabIndex = 0;
             // 
             // xtraTabControl2
@@ -1162,7 +1187,7 @@ namespace MotronicSuite
             this.xtraTabControl2.Location = new System.Drawing.Point(0, 0);
             this.xtraTabControl2.Name = "xtraTabControl2";
             this.xtraTabControl2.SelectedTabPage = this.xtraTabPage3;
-            this.xtraTabControl2.Size = new System.Drawing.Size(469, 355);
+            this.xtraTabControl2.Size = new System.Drawing.Size(218, 358);
             this.xtraTabControl2.TabIndex = 10;
             this.xtraTabControl2.TabPages.AddRange(new DevExpress.XtraTab.XtraTabPage[] {
             this.xtraTabPage3,
@@ -1179,7 +1204,7 @@ namespace MotronicSuite
             this.xtraTabPage3.Controls.Add(this.labelControl1);
             this.xtraTabPage3.Controls.Add(this.labelControl2);
             this.xtraTabPage3.Name = "xtraTabPage3";
-            this.xtraTabPage3.Size = new System.Drawing.Size(460, 325);
+            this.xtraTabPage3.Size = new System.Drawing.Size(216, 333);
             this.xtraTabPage3.Text = "Dashboard";
             // 
             // gaugeEngineSpeed
@@ -1207,7 +1232,7 @@ namespace MotronicSuite
             this.onlineGraphControl1.Name = "onlineGraphControl1";
             this.onlineGraphControl1.Panning = false;
             this.onlineGraphControl1.Pantype = OnlineGraph.PanType.PanLeft;
-            this.onlineGraphControl1.Size = new System.Drawing.Size(466, 120);
+            this.onlineGraphControl1.Size = new System.Drawing.Size(222, 128);
             this.onlineGraphControl1.TabIndex = 9;
             this.onlineGraphControl1.Zoomfactor = 1F;
             // 
@@ -1223,14 +1248,14 @@ namespace MotronicSuite
             this.gaugeLoad.GaugeUnits = "ms";
             this.gaugeLoad.HighlightOpaqueEnd = ((byte)(30));
             this.gaugeLoad.HighlightOpaqueStart = ((byte)(100));
-            this.gaugeLoad.Location = new System.Drawing.Point(0, 237);
+            this.gaugeLoad.Location = new System.Drawing.Point(0, 245);
             this.gaugeLoad.Margin = new System.Windows.Forms.Padding(4);
             this.gaugeLoad.MaxValue = 12.5F;
             this.gaugeLoad.Name = "gaugeLoad";
             this.gaugeLoad.NumberOfDecimals = 2;
             this.gaugeLoad.RecommendedRangeColor = System.Drawing.Color.LawnGreen;
             this.gaugeLoad.RecommendedValue = 5F;
-            this.gaugeLoad.Size = new System.Drawing.Size(460, 88);
+            this.gaugeLoad.Size = new System.Drawing.Size(216, 88);
             this.gaugeLoad.StartColor = System.Drawing.Color.GreenYellow;
             this.gaugeLoad.TabIndex = 0;
             this.gaugeLoad.TextColor = System.Drawing.Color.Silver;
@@ -1293,7 +1318,7 @@ namespace MotronicSuite
             this.xtraTabPage4.Controls.Add(this.gridControl3);
             this.xtraTabPage4.Controls.Add(this.toolStrip1);
             this.xtraTabPage4.Name = "xtraTabPage4";
-            this.xtraTabPage4.Size = new System.Drawing.Size(460, 325);
+            this.xtraTabPage4.Size = new System.Drawing.Size(216, 333);
             this.xtraTabPage4.Text = "Free logging";
             // 
             // gridControl3
@@ -1302,7 +1327,7 @@ namespace MotronicSuite
             this.gridControl3.Location = new System.Drawing.Point(0, 25);
             this.gridControl3.MainView = this.gridView2;
             this.gridControl3.Name = "gridControl3";
-            this.gridControl3.Size = new System.Drawing.Size(460, 300);
+            this.gridControl3.Size = new System.Drawing.Size(216, 308);
             this.gridControl3.TabIndex = 1;
             this.gridControl3.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.gridView2});
@@ -1381,7 +1406,7 @@ namespace MotronicSuite
             this.toolStripButton5});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(460, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(216, 25);
             this.toolStrip1.TabIndex = 0;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -1459,7 +1484,7 @@ namespace MotronicSuite
             this.labelControl4.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
             this.labelControl4.Location = new System.Drawing.Point(3, 97);
             this.labelControl4.Name = "labelControl4";
-            this.labelControl4.Size = new System.Drawing.Size(463, 13);
+            this.labelControl4.Size = new System.Drawing.Size(212, 13);
             this.labelControl4.TabIndex = 8;
             this.labelControl4.Text = "The realtime panel is in an alpha stage at the moment.";
             // 
@@ -1474,7 +1499,7 @@ namespace MotronicSuite
             this.dockPanel1.Options.FloatOnDblClick = false;
             this.dockPanel1.Options.ShowCloseButton = false;
             this.dockPanel1.OriginalSize = new System.Drawing.Size(416, 200);
-            this.dockPanel1.Size = new System.Drawing.Size(416, 386);
+            this.dockPanel1.Size = new System.Drawing.Size(416, 437);
             this.dockPanel1.Text = "Symbol list";
             // 
             // dockPanel1_Container
@@ -1482,7 +1507,7 @@ namespace MotronicSuite
             this.dockPanel1_Container.Controls.Add(this.xtraTabControl1);
             this.dockPanel1_Container.Location = new System.Drawing.Point(4, 24);
             this.dockPanel1_Container.Name = "dockPanel1_Container";
-            this.dockPanel1_Container.Size = new System.Drawing.Size(408, 358);
+            this.dockPanel1_Container.Size = new System.Drawing.Size(408, 409);
             this.dockPanel1_Container.TabIndex = 0;
             // 
             // xtraTabControl1
@@ -1491,7 +1516,7 @@ namespace MotronicSuite
             this.xtraTabControl1.Location = new System.Drawing.Point(0, 0);
             this.xtraTabControl1.Name = "xtraTabControl1";
             this.xtraTabControl1.SelectedTabPage = this.xtraTabPage1;
-            this.xtraTabControl1.Size = new System.Drawing.Size(408, 358);
+            this.xtraTabControl1.Size = new System.Drawing.Size(408, 409);
             this.xtraTabControl1.TabIndex = 1;
             this.xtraTabControl1.TabPages.AddRange(new DevExpress.XtraTab.XtraTabPage[] {
             this.xtraTabPage1,
@@ -1501,7 +1526,7 @@ namespace MotronicSuite
             // 
             this.xtraTabPage1.Controls.Add(this.gridControl1);
             this.xtraTabPage1.Name = "xtraTabPage1";
-            this.xtraTabPage1.Size = new System.Drawing.Size(406, 333);
+            this.xtraTabPage1.Size = new System.Drawing.Size(406, 384);
             this.xtraTabPage1.Text = "Maps";
             // 
             // gridControl1
@@ -1510,7 +1535,7 @@ namespace MotronicSuite
             this.gridControl1.Location = new System.Drawing.Point(0, 0);
             this.gridControl1.MainView = this.gridViewSymbols;
             this.gridControl1.Name = "gridControl1";
-            this.gridControl1.Size = new System.Drawing.Size(406, 333);
+            this.gridControl1.Size = new System.Drawing.Size(406, 384);
             this.gridControl1.TabIndex = 0;
             this.gridControl1.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.gridViewSymbols});
@@ -1697,6 +1722,112 @@ namespace MotronicSuite
             this.gridColumn7.VisibleIndex = 3;
             this.gridColumn7.Width = 85;
             // 
+            // dockRealtimeM2103
+            // 
+            this.dockRealtimeM2103.Controls.Add(this.controlContainer1);
+            this.dockRealtimeM2103.Dock = DevExpress.XtraBars.Docking.DockingStyle.Left;
+            this.dockRealtimeM2103.ID = new System.Guid("33e84b9e-f666-426e-ab42-2374d03bc766");
+            this.dockRealtimeM2103.Location = new System.Drawing.Point(416, 142);
+            this.dockRealtimeM2103.Name = "dockRealtimeM2103";
+            this.dockRealtimeM2103.OriginalSize = new System.Drawing.Size(462, 200);
+            this.dockRealtimeM2103.SavedDock = DevExpress.XtraBars.Docking.DockingStyle.Left;
+            this.dockRealtimeM2103.SavedIndex = 1;
+            this.dockRealtimeM2103.Size = new System.Drawing.Size(462, 437);
+            this.dockRealtimeM2103.Text = "Realtime panel M2.10.3";
+            this.dockRealtimeM2103.Visibility = DevExpress.XtraBars.Docking.DockVisibility.Hidden;
+            // 
+            // controlContainer1
+            // 
+            this.controlContainer1.Controls.Add(this.combiGauge9);
+            this.controlContainer1.Controls.Add(this.labelControl13);
+            this.controlContainer1.Controls.Add(this.combiGauge8);
+            this.controlContainer1.Controls.Add(this.labelControl12);
+            this.controlContainer1.Controls.Add(this.combiGauge7);
+            this.controlContainer1.Controls.Add(this.labelControl11);
+            this.controlContainer1.Controls.Add(this.combiGauge6);
+            this.controlContainer1.Controls.Add(this.labelControl10);
+            this.controlContainer1.Controls.Add(this.combiGauge5);
+            this.controlContainer1.Controls.Add(this.labelControl9);
+            this.controlContainer1.Controls.Add(this.gaugeThrottleM2103);
+            this.controlContainer1.Controls.Add(this.labelControl8);
+            this.controlContainer1.Controls.Add(this.gaugeCoolantM2103);
+            this.controlContainer1.Controls.Add(this.labelControl7);
+            this.controlContainer1.Controls.Add(this.gaugeRPMM2103);
+            this.controlContainer1.Controls.Add(this.labelControl6);
+            this.controlContainer1.Controls.Add(this.gaugeIgnM2103);
+            this.controlContainer1.Controls.Add(this.labelControl5);
+            this.controlContainer1.Controls.Add(this.linearGauge1);
+            this.controlContainer1.Location = new System.Drawing.Point(4, 24);
+            this.controlContainer1.Name = "controlContainer1";
+            this.controlContainer1.Size = new System.Drawing.Size(454, 409);
+            this.controlContainer1.TabIndex = 0;
+            // 
+            // gaugeRPMM2103
+            // 
+            this.gaugeRPMM2103.BackColor = System.Drawing.Color.Transparent;
+            this.gaugeRPMM2103.Location = new System.Drawing.Point(3, 3);
+            this.gaugeRPMM2103.Name = "gaugeRPMM2103";
+            this.gaugeRPMM2103.NumberOfDecimals = 0;
+            this.gaugeRPMM2103.Size = new System.Drawing.Size(144, 69);
+            this.gaugeRPMM2103.TabIndex = 8;
+            this.gaugeRPMM2103.Value = 0F;
+            // 
+            // labelControl6
+            // 
+            this.labelControl6.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+            this.labelControl6.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
+            this.labelControl6.Location = new System.Drawing.Point(3, 78);
+            this.labelControl6.Name = "labelControl6";
+            this.labelControl6.Size = new System.Drawing.Size(144, 13);
+            this.labelControl6.TabIndex = 9;
+            this.labelControl6.Text = "Engine speed";
+            // 
+            // gaugeIgnM2103
+            // 
+            this.gaugeIgnM2103.BackColor = System.Drawing.Color.Transparent;
+            this.gaugeIgnM2103.Location = new System.Drawing.Point(153, 3);
+            this.gaugeIgnM2103.Name = "gaugeIgnM2103";
+            this.gaugeIgnM2103.NumberOfDecimals = 2;
+            this.gaugeIgnM2103.Size = new System.Drawing.Size(144, 69);
+            this.gaugeIgnM2103.TabIndex = 6;
+            this.gaugeIgnM2103.Value = 10F;
+            // 
+            // labelControl5
+            // 
+            this.labelControl5.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+            this.labelControl5.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
+            this.labelControl5.Location = new System.Drawing.Point(153, 78);
+            this.labelControl5.Name = "labelControl5";
+            this.labelControl5.Size = new System.Drawing.Size(144, 13);
+            this.labelControl5.TabIndex = 7;
+            this.labelControl5.Text = "Ignition advance";
+            // 
+            // linearGauge1
+            // 
+            this.linearGauge1.AlphaForGaugeColors = 60;
+            this.linearGauge1.BackGroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(24)))), ((int)(((byte)(24)))), ((int)(((byte)(24)))));
+            this.linearGauge1.BevelLineColor = System.Drawing.Color.Gray;
+            this.linearGauge1.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.linearGauge1.EndColor = System.Drawing.Color.OrangeRed;
+            this.linearGauge1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
+            this.linearGauge1.GaugeText = "Engine load";
+            this.linearGauge1.GaugeUnits = "%";
+            this.linearGauge1.HighlightOpaqueEnd = ((byte)(30));
+            this.linearGauge1.HighlightOpaqueStart = ((byte)(100));
+            this.linearGauge1.Location = new System.Drawing.Point(0, 321);
+            this.linearGauge1.Margin = new System.Windows.Forms.Padding(4);
+            this.linearGauge1.Name = "linearGauge1";
+            this.linearGauge1.NumberOfDecimals = 0;
+            this.linearGauge1.RecommendedRangeColor = System.Drawing.Color.LawnGreen;
+            this.linearGauge1.RecommendedValue = 5F;
+            this.linearGauge1.Size = new System.Drawing.Size(454, 88);
+            this.linearGauge1.StartColor = System.Drawing.Color.GreenYellow;
+            this.linearGauge1.TabIndex = 1;
+            this.linearGauge1.TextColor = System.Drawing.Color.Silver;
+            this.linearGauge1.ThresholdColor = System.Drawing.Color.Firebrick;
+            this.linearGauge1.ThresholdValue = 10F;
+            this.linearGauge1.TickColor = System.Drawing.Color.Gray;
+            // 
             // defaultLookAndFeel1
             // 
             this.defaultLookAndFeel1.LookAndFeel.SkinName = "Metropolis";
@@ -1706,11 +1837,151 @@ namespace MotronicSuite
             this.tmrRealtime.Interval = 10;
             this.tmrRealtime.Tick += new System.EventHandler(this.tmrRealtime_Tick);
             // 
+            // gaugeCoolantM2103
+            // 
+            this.gaugeCoolantM2103.BackColor = System.Drawing.Color.Transparent;
+            this.gaugeCoolantM2103.Location = new System.Drawing.Point(3, 98);
+            this.gaugeCoolantM2103.Name = "gaugeCoolantM2103";
+            this.gaugeCoolantM2103.NumberOfDecimals = 0;
+            this.gaugeCoolantM2103.Size = new System.Drawing.Size(144, 69);
+            this.gaugeCoolantM2103.TabIndex = 10;
+            this.gaugeCoolantM2103.Value = 0F;
+            // 
+            // labelControl7
+            // 
+            this.labelControl7.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+            this.labelControl7.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
+            this.labelControl7.Location = new System.Drawing.Point(3, 173);
+            this.labelControl7.Name = "labelControl7";
+            this.labelControl7.Size = new System.Drawing.Size(144, 13);
+            this.labelControl7.TabIndex = 11;
+            this.labelControl7.Text = "Coolant temperature";
+            // 
+            // gaugeThrottleM2103
+            // 
+            this.gaugeThrottleM2103.BackColor = System.Drawing.Color.Transparent;
+            this.gaugeThrottleM2103.Location = new System.Drawing.Point(303, 3);
+            this.gaugeThrottleM2103.Name = "gaugeThrottleM2103";
+            this.gaugeThrottleM2103.NumberOfDecimals = 0;
+            this.gaugeThrottleM2103.Size = new System.Drawing.Size(144, 69);
+            this.gaugeThrottleM2103.TabIndex = 12;
+            this.gaugeThrottleM2103.Value = 0F;
+            // 
+            // labelControl8
+            // 
+            this.labelControl8.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+            this.labelControl8.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
+            this.labelControl8.Location = new System.Drawing.Point(303, 78);
+            this.labelControl8.Name = "labelControl8";
+            this.labelControl8.Size = new System.Drawing.Size(144, 13);
+            this.labelControl8.TabIndex = 13;
+            this.labelControl8.Text = "Throttle position";
+            // 
+            // combiGauge5
+            // 
+            this.combiGauge5.BackColor = System.Drawing.Color.Transparent;
+            this.combiGauge5.Location = new System.Drawing.Point(3, 192);
+            this.combiGauge5.Name = "combiGauge5";
+            this.combiGauge5.NumberOfDecimals = 0;
+            this.combiGauge5.Size = new System.Drawing.Size(144, 69);
+            this.combiGauge5.TabIndex = 10;
+            this.combiGauge5.Value = 0F;
+            // 
+            // labelControl9
+            // 
+            this.labelControl9.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+            this.labelControl9.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
+            this.labelControl9.Location = new System.Drawing.Point(3, 267);
+            this.labelControl9.Name = "labelControl9";
+            this.labelControl9.Size = new System.Drawing.Size(144, 13);
+            this.labelControl9.TabIndex = 11;
+            this.labelControl9.Text = "Vehicle speed";
+            // 
+            // combiGauge6
+            // 
+            this.combiGauge6.BackColor = System.Drawing.Color.Transparent;
+            this.combiGauge6.Location = new System.Drawing.Point(153, 98);
+            this.combiGauge6.Name = "combiGauge6";
+            this.combiGauge6.NumberOfDecimals = 0;
+            this.combiGauge6.Size = new System.Drawing.Size(144, 69);
+            this.combiGauge6.TabIndex = 12;
+            this.combiGauge6.Value = 0F;
+            // 
+            // labelControl10
+            // 
+            this.labelControl10.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+            this.labelControl10.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
+            this.labelControl10.Location = new System.Drawing.Point(153, 173);
+            this.labelControl10.Name = "labelControl10";
+            this.labelControl10.Size = new System.Drawing.Size(144, 13);
+            this.labelControl10.TabIndex = 13;
+            this.labelControl10.Text = "Air mass";
+            // 
+            // combiGauge7
+            // 
+            this.combiGauge7.BackColor = System.Drawing.Color.Transparent;
+            this.combiGauge7.Location = new System.Drawing.Point(303, 98);
+            this.combiGauge7.Name = "combiGauge7";
+            this.combiGauge7.NumberOfDecimals = 2;
+            this.combiGauge7.Size = new System.Drawing.Size(144, 69);
+            this.combiGauge7.TabIndex = 14;
+            this.combiGauge7.Value = 0F;
+            // 
+            // labelControl11
+            // 
+            this.labelControl11.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+            this.labelControl11.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
+            this.labelControl11.Location = new System.Drawing.Point(303, 173);
+            this.labelControl11.Name = "labelControl11";
+            this.labelControl11.Size = new System.Drawing.Size(144, 13);
+            this.labelControl11.TabIndex = 15;
+            this.labelControl11.Text = "Lambda voltage";
+            // 
+            // combiGauge8
+            // 
+            this.combiGauge8.BackColor = System.Drawing.Color.Transparent;
+            this.combiGauge8.Location = new System.Drawing.Point(153, 192);
+            this.combiGauge8.Name = "combiGauge8";
+            this.combiGauge8.NumberOfDecimals = 0;
+            this.combiGauge8.Size = new System.Drawing.Size(144, 69);
+            this.combiGauge8.TabIndex = 16;
+            this.combiGauge8.Value = 0F;
+            // 
+            // labelControl12
+            // 
+            this.labelControl12.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+            this.labelControl12.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
+            this.labelControl12.Location = new System.Drawing.Point(153, 267);
+            this.labelControl12.Name = "labelControl12";
+            this.labelControl12.Size = new System.Drawing.Size(144, 13);
+            this.labelControl12.TabIndex = 17;
+            this.labelControl12.Text = "Short term trim";
+            // 
+            // combiGauge9
+            // 
+            this.combiGauge9.BackColor = System.Drawing.Color.Transparent;
+            this.combiGauge9.Location = new System.Drawing.Point(303, 192);
+            this.combiGauge9.Name = "combiGauge9";
+            this.combiGauge9.NumberOfDecimals = 0;
+            this.combiGauge9.Size = new System.Drawing.Size(144, 69);
+            this.combiGauge9.TabIndex = 18;
+            this.combiGauge9.Value = 0F;
+            // 
+            // labelControl13
+            // 
+            this.labelControl13.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+            this.labelControl13.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
+            this.labelControl13.Location = new System.Drawing.Point(303, 267);
+            this.labelControl13.Name = "labelControl13";
+            this.labelControl13.Size = new System.Drawing.Size(144, 13);
+            this.labelControl13.TabIndex = 19;
+            this.labelControl13.Text = "Long term trim";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1077, 556);
+            this.ClientSize = new System.Drawing.Size(1052, 607);
             this.Controls.Add(this.dockPanel1);
             this.Controls.Add(this.rbnStatusbar);
             this.Controls.Add(this.ribbonControl1);
@@ -1747,6 +2018,9 @@ namespace MotronicSuite
             this.xtraTabPage2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.gridControl2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridView1)).EndInit();
+            this.dockRealtimeM2103.ResumeLayout(false);
+            this.controlContainer1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.linearGauge1)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -1910,6 +2184,27 @@ namespace MotronicSuite
         private System.Windows.Forms.ToolStripButton toolStripButton5;
         private System.Windows.Forms.ToolStripButton toolStripButton6;
         private DevExpress.XtraBars.BarButtonItem btnExportXMLDescriptor;
+        private DevExpress.XtraBars.Docking.DockPanel dockRealtimeM2103;
+        private DevExpress.XtraBars.Docking.ControlContainer controlContainer1;
+        private ProGauges.CombiGauge gaugeRPMM2103;
+        private DevExpress.XtraEditors.LabelControl labelControl6;
+        private ProGauges.CombiGauge gaugeIgnM2103;
+        private DevExpress.XtraEditors.LabelControl labelControl5;
+        private ProGauges.LinearGauge linearGauge1;
+        private ProGauges.CombiGauge gaugeThrottleM2103;
+        private DevExpress.XtraEditors.LabelControl labelControl8;
+        private ProGauges.CombiGauge gaugeCoolantM2103;
+        private DevExpress.XtraEditors.LabelControl labelControl7;
+        private ProGauges.CombiGauge combiGauge5;
+        private DevExpress.XtraEditors.LabelControl labelControl9;
+        private ProGauges.CombiGauge combiGauge6;
+        private DevExpress.XtraEditors.LabelControl labelControl10;
+        private ProGauges.CombiGauge combiGauge7;
+        private DevExpress.XtraEditors.LabelControl labelControl11;
+        private ProGauges.CombiGauge combiGauge9;
+        private DevExpress.XtraEditors.LabelControl labelControl13;
+        private ProGauges.CombiGauge combiGauge8;
+        private DevExpress.XtraEditors.LabelControl labelControl12;
 
     }
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+using MotronicTools;
 
 namespace MotronicCommunication
 {
@@ -91,6 +91,15 @@ namespace MotronicCommunication
         public override void StopCommunication()
         {
             m_j1979.stop();
+        }
+        public override int ReadSensor(int pid)
+        {
+            return m_j1979.readSensor(pid);
+        }
+
+        public override SymbolCollection ReadSupportedSensors()
+        {
+            return m_j1979.getSupportedSensors();
         }
 
         private void CastDTCInfo(int dtcCode, int dtcState, int dtcCondition1, int dtcCondition2, int dtcCounter)

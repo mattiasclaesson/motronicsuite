@@ -43,10 +43,15 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\LibUsbDotNet.dll</HintPath>
     </Reference>
+    <Reference Include="MotronicTools, Version=1.2.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\MotronicTools\bin\Debug\MotronicTools.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>

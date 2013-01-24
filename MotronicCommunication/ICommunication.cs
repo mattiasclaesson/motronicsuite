@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using MotronicTools;
 
 namespace MotronicCommunication
 {
@@ -58,6 +59,16 @@ namespace MotronicCommunication
 
         public abstract void StartCommunication(string comportnumber, bool HighSpeed);
         public abstract void StopCommunication();
+
+        //didnt make these abstract because they are needed only in one comm
+        public virtual int ReadSensor(int pid)
+        {
+            return -1;
+        }
+        public virtual SymbolCollection ReadSupportedSensors()
+        {
+            return null;
+        }
 
         public delegate void StatusChanged(object sender, StatusEventArgs e);
         abstract public event StatusChanged onStatusChanged;

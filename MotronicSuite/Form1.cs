@@ -133,6 +133,7 @@ namespace MotronicSuite
         public DelegateUpdateRealTimeValue m_DelegateUpdateRealTimeValue;
 
         ICommunication _ecucomms;// = new M43Communication(); //TODO: Expand for M4.4 now that flashing is done for M4.4
+        private SymbolCollection _realtimeSymbolsM2103;
 
         #endregion
 
@@ -5962,27 +5963,53 @@ Axis Column: XDFTABLE_Id                 * */
 
         private void btnToggleRealtimePanel_ItemClick(object sender, ItemClickEventArgs e)
         {
-            if (dockRealtime.Visibility == DevExpress.XtraBars.Docking.DockVisibility.Visible)
+            if (_ecucomms is M2103Communication)
             {
-                dockRealtime.Visibility = DevExpress.XtraBars.Docking.DockVisibility.Hidden;
-                tmrRealtime.Enabled = false;
-                //if (_ecucomms.CommunicationRunning) _ecucomms.StopCommunication();
-                _stopRealtimeComms = true;
+                if (dockRealtimeM2103.Visibility == DevExpress.XtraBars.Docking.DockVisibility.Visible)
+                {
+                    dockRealtimeM2103.Visibility = DevExpress.XtraBars.Docking.DockVisibility.Hidden;
+                    tmrRealtime.Enabled = false;
+                    _stopRealtimeComms = true;
+                }
+                else
+                {
+                    _realtimeSymbolsM2103 =_ecucomms.ReadSupportedSensors();
+
+                    dockRealtimeM2103.Visibility = DevExpress.XtraBars.Docking.DockVisibility.Visible;
+                    int width = dockManager1.Form.ClientSize.Width - dockPanel1.Width;
+                    int height = dockManager1.Form.ClientSize.Height;
+                    if (width > 462) width = 462;
+                    dockRealtimeM2103.Dock = DockingStyle.Left;
+                    dockRealtimeM2103.Width = width;
+                    tmrRealtime.Enabled = true;
+                    _stopRealtimeComms = false;
+                }
             }
             else
             {
-                if (gridControl3.DataSource == null)
+                if (dockRealtime.Visibility == DevExpress.XtraBars.Docking.DockVisibility.Visible)
                 {
-                    FillRealtimeTable();
+                    dockRealtime.Visibility = DevExpress.XtraBars.Docking.DockVisibility.Hidden;
+                    tmrRealtime.Enabled = false;
+                    //if (_ecucomms.CommunicationRunning) _ecucomms.StopCommunication();
+                    _stopRealtimeComms = true;
                 }
-                dockRealtime.Visibility = DevExpress.XtraBars.Docking.DockVisibility.Visible;
-                int width = dockManager1.Form.ClientSize.Width - dockPanel1.Width;
-                int height = dockManager1.Form.ClientSize.Height;
-                if (width > 462) width = 462;
-                dockRealtime.Dock = DockingStyle.Left;
-                dockRealtime.Width = width;
-                tmrRealtime.Enabled = true;
-                _stopRealtimeComms = false;
+                else
+                {
+                    if (gridControl3.DataSource == null)
+                    {
+                        FillRealtimeTable();
+                    }
+
+                    dockRealtime.Visibility = DevExpress.XtraBars.Docking.DockVisibility.Visible;
+                    int width = dockManager1.Form.ClientSize.Width - dockPanel1.Width;
+                    int height = dockManager1.Form.ClientSize.Height;
+                    if (width > 462) width = 462;
+                    dockRealtime.Dock = DockingStyle.Left;
+                    dockRealtime.Width = width;
+                    tmrRealtime.Enabled = true;
+                    _stopRealtimeComms = false;
+                }
             }
         }
 
@@ -6104,6 +6131,88 @@ Axis Column: XDFTABLE_Id                 * */
 
         private Stopwatch sw = new Stopwatch();
 
+        private void tmrRealtimeGeneric()
+        {
+            if (_ecucomms.CommunicationRunning && !_stopRealtimeComms)
+            {
+                // get the list from the realtime panel
+                SymbolCollection sc = (SymbolCollection)gridControl3.DataSource;
+                // sort it by start address
+                sc.SortColumn = "Start_address";
+                sc.SortingOrder = GenericComparer.SortOrder.Ascending;
+                sc.Sort();
+                // now, determine how many blocks we need to read
+                SymbolBlockCollection sbc = determineSymbolBlocks(sc);
+                foreach (SymbolBlock sb in sbc)
+                {
+                    //Console.WriteLine("Block: " + sb.Start_Address.ToString("X4") + "-" + sb.End_Address.ToString("X4") + " " + sb.Length.ToString("X2"));
+                    bool success = false;
+                    // Console.WriteLine("enter read");
+                    byte[] rxbytes = _ecucomms.readSRAM(sb.Start_Address, sb.Length, 1000, out success);
+                    // now update the relevant data
+                    if (success)
+                    {
+                        // Console.WriteLine("Read OK");
+                        foreach (SymbolHelper sh in sc)
+                        {
+                            if (sh.Start_address >= sb.Start_Address && sh.Start_address <= sb.End_Address)
+                            {
+                                double value = Convert.ToDouble(rxbytes[sh.Start_address - sb.Start_Address]) * sh.CorrectionFactor;
+                                value += sh.CorrectionOffset;
+                                UpdateRealtimeInformation(sh.Varname, (float)value);
+                                onlineGraphControl1.AddMeasurement(sh.Units, sh.Varname, DateTime.Now, (float)value, sh.MinValue, sh.MaxValue, sh.Color);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Read failed");
+                    }
+                }
+                if (sbc.Count > 0)
+                {
+                    onlineGraphControl1.ForceRepaint(0);
+                    sw.Stop();
+                    float secs = sw.ElapsedMilliseconds / 1000F;
+                    secs = 1 / secs;
+                    if (float.IsInfinity(secs)) secs = 1;
+                    UpdateRealtimeInformation("FPSCounter", secs);
+                    sw.Reset();
+                    sw.Start();
+                }
+                else
+                {
+                    UpdateRealtimeInformation("FPSCounter", 0);
+                }
+            }
+        }
+
+        private void tmrRealtimeM2103()
+        {
+            if (_ecucomms.CommunicationRunning && !_stopRealtimeComms)
+            {
+                foreach (SymbolHelper sh in _realtimeSymbolsM2103)
+                {
+                    Console.WriteLine("Reading " + sh.Varname);
+                    bool success = true;
+                    int rcv_value = _ecucomms.ReadSensor(sh.Start_address);
+                    // now update the relevant data
+                    if (success)
+                    {
+                        double value = Convert.ToDouble(rcv_value) * sh.CorrectionFactor;
+                        value += sh.CorrectionOffset;
+                        Console.WriteLine("Read " + sh.Varname + "value: " + value);
+                        //UpdateRealtimeInformation(sh.Varname, (float)value);
+                        //onlineGraphControl1.AddMeasurement(sh.Units, sh.Varname, DateTime.Now, (float)value, sh.MinValue, sh.MaxValue, sh.Color);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Read failed");
+                    }
+                }
+            }
+        }
+
         private void tmrRealtime_Tick(object sender, EventArgs e)
         {
             tmrRealtime.Enabled = false;
@@ -6111,57 +6220,13 @@ Axis Column: XDFTABLE_Id                 * */
             {
                 if (_ecucomms != null && !_ecucomms.IsWaitingForResponse)
                 {
-                    if (_ecucomms.CommunicationRunning && !_stopRealtimeComms)
+                    if (_ecucomms is M2103Communication)
                     {
-                        // get the list from the realtime panel
-                        SymbolCollection sc = (SymbolCollection)gridControl3.DataSource;
-                        // sort it by start address
-                        sc.SortColumn = "Start_address";
-                        sc.SortingOrder = GenericComparer.SortOrder.Ascending;
-                        sc.Sort();
-                        // now, determine how many blocks we need to read
-                        SymbolBlockCollection sbc = determineSymbolBlocks(sc);
-                        foreach (SymbolBlock sb in sbc)
-                        {
-                            //Console.WriteLine("Block: " + sb.Start_Address.ToString("X4") + "-" + sb.End_Address.ToString("X4") + " " + sb.Length.ToString("X2"));
-                            bool success = false;
-                           // Console.WriteLine("enter read");
-                            byte[] rxbytes = _ecucomms.readSRAM(sb.Start_Address, sb.Length, 1000, out success);
-                            // now update the relevant data
-                            if (success)
-                            {
-                               // Console.WriteLine("Read OK");
-                                foreach (SymbolHelper sh in sc)
-                                {
-                                    if (sh.Start_address >= sb.Start_Address && sh.Start_address <= sb.End_Address)
-                                    {
-                                        double value = Convert.ToDouble(rxbytes[sh.Start_address - sb.Start_Address]) * sh.CorrectionFactor;
-                                        value += sh.CorrectionOffset;
-                                        UpdateRealtimeInformation(sh.Varname, (float)value);
-                                        onlineGraphControl1.AddMeasurement(sh.Units, sh.Varname, DateTime.Now, (float)value, sh.MinValue, sh.MaxValue, sh.Color);
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                Console.WriteLine("Read failed");
-                            }
-                        }
-                        if (sbc.Count > 0)
-                        {
-                            onlineGraphControl1.ForceRepaint(0);
-                            sw.Stop();
-                            float secs = sw.ElapsedMilliseconds / 1000F;
-                            secs = 1 / secs;
-                            if (float.IsInfinity(secs)) secs = 1;
-                            UpdateRealtimeInformation("FPSCounter", secs);
-                            sw.Reset();
-                            sw.Start();
-                        }
-                        else
-                        {
-                            UpdateRealtimeInformation("FPSCounter", 0);
-                        }
+                        tmrRealtimeM2103();
+                    }
+                    else
+                    {
+                        tmrRealtimeGeneric();
                     }
                 }
                 else
