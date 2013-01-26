@@ -162,6 +162,45 @@ namespace MotronicSuite
             SetFilterMode();
         }
 
+        private void UpdateRealtimeInformationValueM2103(string symbolname, float value)
+        {
+            // Console.WriteLine(symbolname + " = " + value.ToString("F2"));
+            switch (symbolname)
+            {
+                case "Engine speed": // rpm
+                case "Rpm": // rpm
+                    gaugeRPMM2103.Value = value;
+                    //_currentEngineStatus.CurrentRPM = value;
+                    break;
+                case "Engine temperature":
+                    gaugeCoolantM2103.Value = value;
+                    break;
+                case "Throttle position":
+                    gaugeThrottleM2103.Value = value;
+                    break;
+                case "Ignition advance":
+                    gaugeIgnM2103.Value = value;
+                    break;
+                case "Engine load":
+                    gaugeLoadM2103.Value = value;
+                    break;
+                case "Air flow rate":
+                    gaugeAirM2103.Value = value;
+                    break;
+                case "Lambda voltage":
+                    gaugeLambdaM2103.Value = value;
+                    break;
+                case "Vehicle speed":
+                    gaugeSpeedM2103.Value = value;
+                    break;
+                case "Short term trim":
+                    gaugeShortM2103.Value = value;
+                    break;
+                case "Long term trim":
+                    gaugeLongM2103.Value = value;
+                    break;
+            }
+        }
 
         private void UpdateRealtimeInformationValue(string symbolname, float value)
         {
@@ -5975,6 +6014,8 @@ Axis Column: XDFTABLE_Id                 * */
                 {
                     _realtimeSymbolsM2103 =_ecucomms.ReadSupportedSensors();
 
+                    m_DelegateUpdateRealTimeValue = new DelegateUpdateRealTimeValue(this.UpdateRealtimeInformationValueM2103);
+
                     dockRealtimeM2103.Visibility = DevExpress.XtraBars.Docking.DockVisibility.Visible;
                     int width = dockManager1.Form.ClientSize.Width - dockPanel1.Width;
                     int height = dockManager1.Form.ClientSize.Height;
@@ -6204,13 +6245,16 @@ Axis Column: XDFTABLE_Id                 * */
 
                         for (int i = 0; i < sh.Length; ++i)
                         {
-                            rcv_value |= rcv_list[i] << ((sh.Length - i) * 8);
+                            Console.Write(rcv_list[i].ToString("X2") + " ");
+                            rcv_value |= rcv_list[i] << (((sh.Length - 1) - i) * 8);
                         }
+                        Console.WriteLine("total:  " + rcv_value.ToString("X4"));
 
-                        double value = Convert.ToDouble(rcv_value) * sh.CorrectionFactor;
+                        float value = (float)rcv_value * sh.CorrectionFactor;
                         value += sh.CorrectionOffset;
                         Console.WriteLine("Read " + sh.Varname + " value: " + value);
-                        //UpdateRealtimeInformation(sh.Varname, (float)value);
+
+                        UpdateRealtimeInformation(sh.Varname, (float)value);
                         //onlineGraphControl1.AddMeasurement(sh.Units, sh.Varname, DateTime.Now, (float)value, sh.MinValue, sh.MaxValue, sh.Color);
                     }
                     else
@@ -6223,7 +6267,6 @@ Axis Column: XDFTABLE_Id                 * */
 
         private void tmrRealtime_Tick(object sender, EventArgs e)
         {
-            Console.WriteLine("tmrtick");
             tmrRealtime.Enabled = false;
             try
             {
@@ -6231,12 +6274,10 @@ Axis Column: XDFTABLE_Id                 * */
                 {
                     if (_ecucomms is M2103Communication)
                     {
-                        Console.WriteLine("tmrtick M2103");
                         tmrRealtimeM2103();
                     }
                     else
                     {
-                        Console.WriteLine("tmrtick generic");
                         tmrRealtimeGeneric();
                     }
                 }

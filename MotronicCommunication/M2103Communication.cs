@@ -106,7 +106,7 @@ namespace MotronicCommunication
             shrpm.Description = "Engine speed";
             shrpm.Start_address = 0x0C; //this is actually the PID, not any memory address
             shrpm.Length = 2; //2 bytes long
-            shrpm.CorrectionFactor = 1/4;
+            shrpm.CorrectionFactor = 0.25F;
             shrpm.MaxValue = 8000;
             shrpm.CorrectionOffset = 0;
             shrpm.Units = "Rpm";
@@ -139,6 +139,97 @@ namespace MotronicCommunication
             shtps.CorrectionOffset = 0;
             shtps.Color = Color.DimGray;
             rt_symbolCollection.Add(shtps);
+
+            SymbolHelper shignadv = new SymbolHelper();
+            shignadv.Varname = "Ignition advance";
+            shignadv.Description = "Ignition advance";
+            shignadv.Start_address = 0x0E;
+            shignadv.Length = 1;
+            shignadv.MinValue = -20;
+            shignadv.MaxValue = 40;
+            shignadv.Units = "Degrees";
+            shignadv.CorrectionFactor = 0.5F;
+            shignadv.CorrectionOffset = -128 * 0.5F;
+            shignadv.Color = Color.LightBlue;
+            rt_symbolCollection.Add(shignadv);
+
+            SymbolHelper shload = new SymbolHelper();
+            shload.Varname = "Engine load";
+            shload.Description = "Engine load";
+            shload.Start_address = 0x04;
+            shload.Length = 1;
+            shload.Units = "%";
+            shload.MinValue = 0;
+            shload.MaxValue = 100;
+            shload.CorrectionFactor = 0.39216F;
+            shload.CorrectionOffset = 0;
+            shload.Color = Color.Red;
+            rt_symbolCollection.Add(shload);
+
+            SymbolHelper shafr = new SymbolHelper();
+            shafr.Varname = "Air flow rate";
+            shafr.Description = "Air flow rate";
+            shafr.Start_address = 0x10;
+            shafr.Length = 2;
+            shafr.Units = "g/s";
+            shafr.MinValue = 0;
+            shafr.MaxValue = 656;
+            shafr.CorrectionFactor = 0.01F;
+            shafr.CorrectionOffset = 0;
+            shafr.Color = Color.Ivory;
+            rt_symbolCollection.Add(shafr);
+
+            SymbolHelper shlambda = new SymbolHelper();
+            shlambda.Varname = "Lambda voltage";
+            shlambda.Description = "Lambda voltage";
+            shlambda.Start_address = 0x14;
+            shlambda.Length = 1;
+            shlambda.Units = "V";
+            shlambda.MinValue = 0;
+            shlambda.MaxValue = 1.3F;
+            shlambda.CorrectionFactor = 0.005F;
+            shlambda.CorrectionOffset = 0;
+            shlambda.Color = Color.Ivory;
+            rt_symbolCollection.Add(shlambda);
+
+            SymbolHelper shvspeed = new SymbolHelper();
+            shvspeed.Varname = "Vehicle speed";
+            shvspeed.Description = "Vehicle speed";
+            shvspeed.Start_address = 0x0d;
+            shvspeed.Length = 1;
+            shvspeed.Units = "km/h";
+            shvspeed.MinValue = 0;
+            shvspeed.MaxValue = 210;
+            shvspeed.CorrectionFactor = 1;
+            shvspeed.CorrectionOffset = 0;
+            shvspeed.Color = Color.Ivory;
+            rt_symbolCollection.Add(shvspeed);
+
+            SymbolHelper shshort = new SymbolHelper();
+            shshort.Varname = "Short term trim";
+            shshort.Description = "Short term trim";
+            shshort.Start_address = 0x06;
+            shshort.Length = 1;
+            shshort.Units = "%";
+            shshort.MinValue = -100;
+            shshort.MaxValue = 100;
+            shshort.CorrectionFactor = 0.78125F;
+            shshort.CorrectionOffset = -128F * 0.78125F;
+            shshort.Color = Color.Ivory;
+            rt_symbolCollection.Add(shshort);
+
+            SymbolHelper shlong = new SymbolHelper();
+            shlong.Varname = "Long term trim";
+            shlong.Description = "Long term trim";
+            shlong.Start_address = 0x07;
+            shlong.Length = 1;
+            shlong.Units = "%";
+            shlong.MinValue = -100;
+            shlong.MaxValue = 100;
+            shlong.CorrectionFactor = 0.78125F;
+            shlong.CorrectionOffset = -128F * 0.78125F;
+            shlong.Color = Color.Ivory;
+            rt_symbolCollection.Add(shlong);
 
             return rt_symbolCollection;
         }

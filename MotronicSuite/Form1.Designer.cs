@@ -187,27 +187,27 @@ namespace MotronicSuite
             this.gridColumn7 = new DevExpress.XtraGrid.Columns.GridColumn();
             this.dockRealtimeM2103 = new DevExpress.XtraBars.Docking.DockPanel();
             this.controlContainer1 = new DevExpress.XtraBars.Docking.ControlContainer();
+            this.gaugeLongM2103 = new ProGauges.CombiGauge();
+            this.labelControl13 = new DevExpress.XtraEditors.LabelControl();
+            this.gaugeShortM2103 = new ProGauges.CombiGauge();
+            this.labelControl12 = new DevExpress.XtraEditors.LabelControl();
+            this.gaugeLambdaM2103 = new ProGauges.CombiGauge();
+            this.labelControl11 = new DevExpress.XtraEditors.LabelControl();
+            this.gaugeAirM2103 = new ProGauges.CombiGauge();
+            this.labelControl10 = new DevExpress.XtraEditors.LabelControl();
+            this.gaugeSpeedM2103 = new ProGauges.CombiGauge();
+            this.labelControl9 = new DevExpress.XtraEditors.LabelControl();
+            this.gaugeThrottleM2103 = new ProGauges.CombiGauge();
+            this.labelControl8 = new DevExpress.XtraEditors.LabelControl();
+            this.gaugeCoolantM2103 = new ProGauges.CombiGauge();
+            this.labelControl7 = new DevExpress.XtraEditors.LabelControl();
             this.gaugeRPMM2103 = new ProGauges.CombiGauge();
             this.labelControl6 = new DevExpress.XtraEditors.LabelControl();
             this.gaugeIgnM2103 = new ProGauges.CombiGauge();
             this.labelControl5 = new DevExpress.XtraEditors.LabelControl();
-            this.linearGauge1 = new ProGauges.LinearGauge();
+            this.gaugeLoadM2103 = new ProGauges.LinearGauge();
             this.defaultLookAndFeel1 = new DevExpress.LookAndFeel.DefaultLookAndFeel(this.components);
             this.tmrRealtime = new System.Windows.Forms.Timer(this.components);
-            this.gaugeCoolantM2103 = new ProGauges.CombiGauge();
-            this.labelControl7 = new DevExpress.XtraEditors.LabelControl();
-            this.gaugeThrottleM2103 = new ProGauges.CombiGauge();
-            this.labelControl8 = new DevExpress.XtraEditors.LabelControl();
-            this.combiGauge5 = new ProGauges.CombiGauge();
-            this.labelControl9 = new DevExpress.XtraEditors.LabelControl();
-            this.combiGauge6 = new ProGauges.CombiGauge();
-            this.labelControl10 = new DevExpress.XtraEditors.LabelControl();
-            this.combiGauge7 = new ProGauges.CombiGauge();
-            this.labelControl11 = new DevExpress.XtraEditors.LabelControl();
-            this.combiGauge8 = new ProGauges.CombiGauge();
-            this.labelControl12 = new DevExpress.XtraEditors.LabelControl();
-            this.combiGauge9 = new ProGauges.CombiGauge();
-            this.labelControl13 = new DevExpress.XtraEditors.LabelControl();
             ((System.ComponentModel.ISupportInitialize)(this.ribbonControl1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.repositoryItemProgressBar1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dockManager1)).BeginInit();
@@ -233,7 +233,7 @@ namespace MotronicSuite
             ((System.ComponentModel.ISupportInitialize)(this.gridView1)).BeginInit();
             this.dockRealtimeM2103.SuspendLayout();
             this.controlContainer1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.linearGauge1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gaugeLoadM2103)).BeginInit();
             this.SuspendLayout();
             // 
             // ribbonControl1
@@ -817,6 +817,7 @@ namespace MotronicSuite
             // btnToggleRealtimePanel
             // 
             this.btnToggleRealtimePanel.Caption = "Show/hide realtime panel";
+            this.btnToggleRealtimePanel.Enabled = false;
             this.btnToggleRealtimePanel.Id = 70;
             this.btnToggleRealtimePanel.ItemShortcut = new DevExpress.XtraBars.BarShortcut((System.Windows.Forms.Keys.Shift | System.Windows.Forms.Keys.F1));
             this.btnToggleRealtimePanel.Name = "btnToggleRealtimePanel";
@@ -1647,7 +1648,7 @@ namespace MotronicSuite
             // 
             this.xtraTabPage2.Controls.Add(this.gridControl2);
             this.xtraTabPage2.Name = "xtraTabPage2";
-            this.xtraTabPage2.Size = new System.Drawing.Size(406, 333);
+            this.xtraTabPage2.Size = new System.Drawing.Size(406, 384);
             this.xtraTabPage2.Text = "Support points";
             // 
             // gridControl2
@@ -1656,7 +1657,7 @@ namespace MotronicSuite
             this.gridControl2.Location = new System.Drawing.Point(0, 0);
             this.gridControl2.MainView = this.gridView1;
             this.gridControl2.Name = "gridControl2";
-            this.gridControl2.Size = new System.Drawing.Size(406, 333);
+            this.gridControl2.Size = new System.Drawing.Size(406, 384);
             this.gridControl2.TabIndex = 1;
             this.gridControl2.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.gridView1});
@@ -1738,15 +1739,15 @@ namespace MotronicSuite
             // 
             // controlContainer1
             // 
-            this.controlContainer1.Controls.Add(this.combiGauge9);
+            this.controlContainer1.Controls.Add(this.gaugeLongM2103);
             this.controlContainer1.Controls.Add(this.labelControl13);
-            this.controlContainer1.Controls.Add(this.combiGauge8);
+            this.controlContainer1.Controls.Add(this.gaugeShortM2103);
             this.controlContainer1.Controls.Add(this.labelControl12);
-            this.controlContainer1.Controls.Add(this.combiGauge7);
+            this.controlContainer1.Controls.Add(this.gaugeLambdaM2103);
             this.controlContainer1.Controls.Add(this.labelControl11);
-            this.controlContainer1.Controls.Add(this.combiGauge6);
+            this.controlContainer1.Controls.Add(this.gaugeAirM2103);
             this.controlContainer1.Controls.Add(this.labelControl10);
-            this.controlContainer1.Controls.Add(this.combiGauge5);
+            this.controlContainer1.Controls.Add(this.gaugeSpeedM2103);
             this.controlContainer1.Controls.Add(this.labelControl9);
             this.controlContainer1.Controls.Add(this.gaugeThrottleM2103);
             this.controlContainer1.Controls.Add(this.labelControl8);
@@ -1756,106 +1757,111 @@ namespace MotronicSuite
             this.controlContainer1.Controls.Add(this.labelControl6);
             this.controlContainer1.Controls.Add(this.gaugeIgnM2103);
             this.controlContainer1.Controls.Add(this.labelControl5);
-            this.controlContainer1.Controls.Add(this.linearGauge1);
+            this.controlContainer1.Controls.Add(this.gaugeLoadM2103);
             this.controlContainer1.Location = new System.Drawing.Point(4, 24);
             this.controlContainer1.Name = "controlContainer1";
             this.controlContainer1.Size = new System.Drawing.Size(454, 409);
             this.controlContainer1.TabIndex = 0;
             // 
-            // gaugeRPMM2103
+            // gaugeLongM2103
             // 
-            this.gaugeRPMM2103.BackColor = System.Drawing.Color.Transparent;
-            this.gaugeRPMM2103.Location = new System.Drawing.Point(3, 3);
-            this.gaugeRPMM2103.Name = "gaugeRPMM2103";
-            this.gaugeRPMM2103.NumberOfDecimals = 0;
-            this.gaugeRPMM2103.Size = new System.Drawing.Size(144, 69);
-            this.gaugeRPMM2103.TabIndex = 8;
-            this.gaugeRPMM2103.Value = 0F;
+            this.gaugeLongM2103.BackColor = System.Drawing.Color.Transparent;
+            this.gaugeLongM2103.Location = new System.Drawing.Point(303, 192);
+            this.gaugeLongM2103.Name = "gaugeLongM2103";
+            this.gaugeLongM2103.NumberOfDecimals = 0;
+            this.gaugeLongM2103.Size = new System.Drawing.Size(144, 69);
+            this.gaugeLongM2103.TabIndex = 18;
+            this.gaugeLongM2103.Value = 0F;
             // 
-            // labelControl6
+            // labelControl13
             // 
-            this.labelControl6.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
-            this.labelControl6.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
-            this.labelControl6.Location = new System.Drawing.Point(3, 78);
-            this.labelControl6.Name = "labelControl6";
-            this.labelControl6.Size = new System.Drawing.Size(144, 13);
-            this.labelControl6.TabIndex = 9;
-            this.labelControl6.Text = "Engine speed";
+            this.labelControl13.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+            this.labelControl13.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
+            this.labelControl13.Location = new System.Drawing.Point(303, 267);
+            this.labelControl13.Name = "labelControl13";
+            this.labelControl13.Size = new System.Drawing.Size(144, 13);
+            this.labelControl13.TabIndex = 19;
+            this.labelControl13.Text = "Long term trim (%)";
             // 
-            // gaugeIgnM2103
+            // gaugeShortM2103
             // 
-            this.gaugeIgnM2103.BackColor = System.Drawing.Color.Transparent;
-            this.gaugeIgnM2103.Location = new System.Drawing.Point(153, 3);
-            this.gaugeIgnM2103.Name = "gaugeIgnM2103";
-            this.gaugeIgnM2103.NumberOfDecimals = 2;
-            this.gaugeIgnM2103.Size = new System.Drawing.Size(144, 69);
-            this.gaugeIgnM2103.TabIndex = 6;
-            this.gaugeIgnM2103.Value = 10F;
+            this.gaugeShortM2103.BackColor = System.Drawing.Color.Transparent;
+            this.gaugeShortM2103.Location = new System.Drawing.Point(153, 192);
+            this.gaugeShortM2103.Name = "gaugeShortM2103";
+            this.gaugeShortM2103.NumberOfDecimals = 0;
+            this.gaugeShortM2103.Size = new System.Drawing.Size(144, 69);
+            this.gaugeShortM2103.TabIndex = 16;
+            this.gaugeShortM2103.Value = 0F;
             // 
-            // labelControl5
+            // labelControl12
             // 
-            this.labelControl5.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
-            this.labelControl5.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
-            this.labelControl5.Location = new System.Drawing.Point(153, 78);
-            this.labelControl5.Name = "labelControl5";
-            this.labelControl5.Size = new System.Drawing.Size(144, 13);
-            this.labelControl5.TabIndex = 7;
-            this.labelControl5.Text = "Ignition advance";
+            this.labelControl12.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+            this.labelControl12.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
+            this.labelControl12.Location = new System.Drawing.Point(153, 267);
+            this.labelControl12.Name = "labelControl12";
+            this.labelControl12.Size = new System.Drawing.Size(144, 13);
+            this.labelControl12.TabIndex = 17;
+            this.labelControl12.Text = "Short term trim (%)";
             // 
-            // linearGauge1
+            // gaugeLambdaM2103
             // 
-            this.linearGauge1.AlphaForGaugeColors = 60;
-            this.linearGauge1.BackGroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(24)))), ((int)(((byte)(24)))), ((int)(((byte)(24)))));
-            this.linearGauge1.BevelLineColor = System.Drawing.Color.Gray;
-            this.linearGauge1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.linearGauge1.EndColor = System.Drawing.Color.OrangeRed;
-            this.linearGauge1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
-            this.linearGauge1.GaugeText = "Engine load";
-            this.linearGauge1.GaugeUnits = "%";
-            this.linearGauge1.HighlightOpaqueEnd = ((byte)(30));
-            this.linearGauge1.HighlightOpaqueStart = ((byte)(100));
-            this.linearGauge1.Location = new System.Drawing.Point(0, 321);
-            this.linearGauge1.Margin = new System.Windows.Forms.Padding(4);
-            this.linearGauge1.Name = "linearGauge1";
-            this.linearGauge1.NumberOfDecimals = 0;
-            this.linearGauge1.RecommendedRangeColor = System.Drawing.Color.LawnGreen;
-            this.linearGauge1.RecommendedValue = 5F;
-            this.linearGauge1.Size = new System.Drawing.Size(454, 88);
-            this.linearGauge1.StartColor = System.Drawing.Color.GreenYellow;
-            this.linearGauge1.TabIndex = 1;
-            this.linearGauge1.TextColor = System.Drawing.Color.Silver;
-            this.linearGauge1.ThresholdColor = System.Drawing.Color.Firebrick;
-            this.linearGauge1.ThresholdValue = 10F;
-            this.linearGauge1.TickColor = System.Drawing.Color.Gray;
+            this.gaugeLambdaM2103.BackColor = System.Drawing.Color.Transparent;
+            this.gaugeLambdaM2103.Location = new System.Drawing.Point(303, 98);
+            this.gaugeLambdaM2103.Name = "gaugeLambdaM2103";
+            this.gaugeLambdaM2103.NumberOfDecimals = 2;
+            this.gaugeLambdaM2103.Size = new System.Drawing.Size(144, 69);
+            this.gaugeLambdaM2103.TabIndex = 14;
+            this.gaugeLambdaM2103.Value = 0F;
             // 
-            // defaultLookAndFeel1
+            // labelControl11
             // 
-            this.defaultLookAndFeel1.LookAndFeel.SkinName = "Metropolis";
+            this.labelControl11.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+            this.labelControl11.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
+            this.labelControl11.Location = new System.Drawing.Point(303, 173);
+            this.labelControl11.Name = "labelControl11";
+            this.labelControl11.Size = new System.Drawing.Size(144, 13);
+            this.labelControl11.TabIndex = 15;
+            this.labelControl11.Text = "Lambda voltage (V)";
             // 
-            // tmrRealtime
+            // gaugeAirM2103
             // 
-            this.tmrRealtime.Interval = 10;
-            this.tmrRealtime.Tick += new System.EventHandler(this.tmrRealtime_Tick);
+            this.gaugeAirM2103.BackColor = System.Drawing.Color.Transparent;
+            this.gaugeAirM2103.Location = new System.Drawing.Point(153, 98);
+            this.gaugeAirM2103.Name = "gaugeAirM2103";
+            this.gaugeAirM2103.NumberOfDecimals = 2;
+            this.gaugeAirM2103.Size = new System.Drawing.Size(144, 69);
+            this.gaugeAirM2103.TabIndex = 12;
+            this.gaugeAirM2103.Value = 0F;
             // 
-            // gaugeCoolantM2103
+            // labelControl10
             // 
-            this.gaugeCoolantM2103.BackColor = System.Drawing.Color.Transparent;
-            this.gaugeCoolantM2103.Location = new System.Drawing.Point(3, 98);
-            this.gaugeCoolantM2103.Name = "gaugeCoolantM2103";
-            this.gaugeCoolantM2103.NumberOfDecimals = 0;
-            this.gaugeCoolantM2103.Size = new System.Drawing.Size(144, 69);
-            this.gaugeCoolantM2103.TabIndex = 10;
-            this.gaugeCoolantM2103.Value = 0F;
+            this.labelControl10.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+            this.labelControl10.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
+            this.labelControl10.Location = new System.Drawing.Point(153, 173);
+            this.labelControl10.Name = "labelControl10";
+            this.labelControl10.Size = new System.Drawing.Size(144, 13);
+            this.labelControl10.TabIndex = 13;
+            this.labelControl10.Text = "Air flow (g/s)";
             // 
-            // labelControl7
+            // gaugeSpeedM2103
             // 
-            this.labelControl7.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
-            this.labelControl7.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
-            this.labelControl7.Location = new System.Drawing.Point(3, 173);
-            this.labelControl7.Name = "labelControl7";
-            this.labelControl7.Size = new System.Drawing.Size(144, 13);
-            this.labelControl7.TabIndex = 11;
-            this.labelControl7.Text = "Coolant temperature";
+            this.gaugeSpeedM2103.BackColor = System.Drawing.Color.Transparent;
+            this.gaugeSpeedM2103.Location = new System.Drawing.Point(3, 192);
+            this.gaugeSpeedM2103.Name = "gaugeSpeedM2103";
+            this.gaugeSpeedM2103.NumberOfDecimals = 0;
+            this.gaugeSpeedM2103.Size = new System.Drawing.Size(144, 69);
+            this.gaugeSpeedM2103.TabIndex = 10;
+            this.gaugeSpeedM2103.Value = 0F;
+            // 
+            // labelControl9
+            // 
+            this.labelControl9.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+            this.labelControl9.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
+            this.labelControl9.Location = new System.Drawing.Point(3, 267);
+            this.labelControl9.Name = "labelControl9";
+            this.labelControl9.Size = new System.Drawing.Size(144, 13);
+            this.labelControl9.TabIndex = 11;
+            this.labelControl9.Text = "Vehicle speed (km/h)";
             // 
             // gaugeThrottleM2103
             // 
@@ -1875,107 +1881,102 @@ namespace MotronicSuite
             this.labelControl8.Name = "labelControl8";
             this.labelControl8.Size = new System.Drawing.Size(144, 13);
             this.labelControl8.TabIndex = 13;
-            this.labelControl8.Text = "Throttle position";
+            this.labelControl8.Text = "Throttle position (%)";
             // 
-            // combiGauge5
+            // gaugeCoolantM2103
             // 
-            this.combiGauge5.BackColor = System.Drawing.Color.Transparent;
-            this.combiGauge5.Location = new System.Drawing.Point(3, 192);
-            this.combiGauge5.Name = "combiGauge5";
-            this.combiGauge5.NumberOfDecimals = 0;
-            this.combiGauge5.Size = new System.Drawing.Size(144, 69);
-            this.combiGauge5.TabIndex = 10;
-            this.combiGauge5.Value = 0F;
+            this.gaugeCoolantM2103.BackColor = System.Drawing.Color.Transparent;
+            this.gaugeCoolantM2103.Location = new System.Drawing.Point(3, 98);
+            this.gaugeCoolantM2103.Name = "gaugeCoolantM2103";
+            this.gaugeCoolantM2103.NumberOfDecimals = 0;
+            this.gaugeCoolantM2103.Size = new System.Drawing.Size(144, 69);
+            this.gaugeCoolantM2103.TabIndex = 10;
+            this.gaugeCoolantM2103.Value = 0F;
             // 
-            // labelControl9
+            // labelControl7
             // 
-            this.labelControl9.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
-            this.labelControl9.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
-            this.labelControl9.Location = new System.Drawing.Point(3, 267);
-            this.labelControl9.Name = "labelControl9";
-            this.labelControl9.Size = new System.Drawing.Size(144, 13);
-            this.labelControl9.TabIndex = 11;
-            this.labelControl9.Text = "Vehicle speed";
+            this.labelControl7.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+            this.labelControl7.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
+            this.labelControl7.Location = new System.Drawing.Point(3, 173);
+            this.labelControl7.Name = "labelControl7";
+            this.labelControl7.Size = new System.Drawing.Size(144, 13);
+            this.labelControl7.TabIndex = 11;
+            this.labelControl7.Text = "Coolant temperature (celsius)";
             // 
-            // combiGauge6
+            // gaugeRPMM2103
             // 
-            this.combiGauge6.BackColor = System.Drawing.Color.Transparent;
-            this.combiGauge6.Location = new System.Drawing.Point(153, 98);
-            this.combiGauge6.Name = "combiGauge6";
-            this.combiGauge6.NumberOfDecimals = 0;
-            this.combiGauge6.Size = new System.Drawing.Size(144, 69);
-            this.combiGauge6.TabIndex = 12;
-            this.combiGauge6.Value = 0F;
+            this.gaugeRPMM2103.BackColor = System.Drawing.Color.Transparent;
+            this.gaugeRPMM2103.Location = new System.Drawing.Point(3, 3);
+            this.gaugeRPMM2103.Name = "gaugeRPMM2103";
+            this.gaugeRPMM2103.NumberOfDecimals = 0;
+            this.gaugeRPMM2103.Size = new System.Drawing.Size(144, 69);
+            this.gaugeRPMM2103.TabIndex = 8;
+            this.gaugeRPMM2103.Value = 0F;
             // 
-            // labelControl10
+            // labelControl6
             // 
-            this.labelControl10.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
-            this.labelControl10.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
-            this.labelControl10.Location = new System.Drawing.Point(153, 173);
-            this.labelControl10.Name = "labelControl10";
-            this.labelControl10.Size = new System.Drawing.Size(144, 13);
-            this.labelControl10.TabIndex = 13;
-            this.labelControl10.Text = "Air mass";
+            this.labelControl6.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+            this.labelControl6.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
+            this.labelControl6.Location = new System.Drawing.Point(3, 78);
+            this.labelControl6.Name = "labelControl6";
+            this.labelControl6.Size = new System.Drawing.Size(144, 13);
+            this.labelControl6.TabIndex = 9;
+            this.labelControl6.Text = "Engine speed (RPM)";
             // 
-            // combiGauge7
+            // gaugeIgnM2103
             // 
-            this.combiGauge7.BackColor = System.Drawing.Color.Transparent;
-            this.combiGauge7.Location = new System.Drawing.Point(303, 98);
-            this.combiGauge7.Name = "combiGauge7";
-            this.combiGauge7.NumberOfDecimals = 2;
-            this.combiGauge7.Size = new System.Drawing.Size(144, 69);
-            this.combiGauge7.TabIndex = 14;
-            this.combiGauge7.Value = 0F;
+            this.gaugeIgnM2103.BackColor = System.Drawing.Color.Transparent;
+            this.gaugeIgnM2103.Location = new System.Drawing.Point(153, 3);
+            this.gaugeIgnM2103.Name = "gaugeIgnM2103";
+            this.gaugeIgnM2103.NumberOfDecimals = 2;
+            this.gaugeIgnM2103.Size = new System.Drawing.Size(144, 69);
+            this.gaugeIgnM2103.TabIndex = 6;
+            this.gaugeIgnM2103.Value = 10F;
             // 
-            // labelControl11
+            // labelControl5
             // 
-            this.labelControl11.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
-            this.labelControl11.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
-            this.labelControl11.Location = new System.Drawing.Point(303, 173);
-            this.labelControl11.Name = "labelControl11";
-            this.labelControl11.Size = new System.Drawing.Size(144, 13);
-            this.labelControl11.TabIndex = 15;
-            this.labelControl11.Text = "Lambda voltage";
+            this.labelControl5.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+            this.labelControl5.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
+            this.labelControl5.Location = new System.Drawing.Point(153, 78);
+            this.labelControl5.Name = "labelControl5";
+            this.labelControl5.Size = new System.Drawing.Size(144, 13);
+            this.labelControl5.TabIndex = 7;
+            this.labelControl5.Text = "Ignition advance (degrees)";
             // 
-            // combiGauge8
+            // gaugeLoadM2103
             // 
-            this.combiGauge8.BackColor = System.Drawing.Color.Transparent;
-            this.combiGauge8.Location = new System.Drawing.Point(153, 192);
-            this.combiGauge8.Name = "combiGauge8";
-            this.combiGauge8.NumberOfDecimals = 0;
-            this.combiGauge8.Size = new System.Drawing.Size(144, 69);
-            this.combiGauge8.TabIndex = 16;
-            this.combiGauge8.Value = 0F;
+            this.gaugeLoadM2103.AlphaForGaugeColors = 60;
+            this.gaugeLoadM2103.BackGroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(24)))), ((int)(((byte)(24)))), ((int)(((byte)(24)))));
+            this.gaugeLoadM2103.BevelLineColor = System.Drawing.Color.Gray;
+            this.gaugeLoadM2103.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.gaugeLoadM2103.EndColor = System.Drawing.Color.OrangeRed;
+            this.gaugeLoadM2103.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
+            this.gaugeLoadM2103.GaugeText = "Engine load";
+            this.gaugeLoadM2103.GaugeUnits = "%";
+            this.gaugeLoadM2103.HighlightOpaqueEnd = ((byte)(30));
+            this.gaugeLoadM2103.HighlightOpaqueStart = ((byte)(100));
+            this.gaugeLoadM2103.Location = new System.Drawing.Point(0, 321);
+            this.gaugeLoadM2103.Margin = new System.Windows.Forms.Padding(4);
+            this.gaugeLoadM2103.Name = "gaugeLoadM2103";
+            this.gaugeLoadM2103.NumberOfDecimals = 0;
+            this.gaugeLoadM2103.RecommendedRangeColor = System.Drawing.Color.LawnGreen;
+            this.gaugeLoadM2103.RecommendedValue = 5F;
+            this.gaugeLoadM2103.Size = new System.Drawing.Size(454, 88);
+            this.gaugeLoadM2103.StartColor = System.Drawing.Color.GreenYellow;
+            this.gaugeLoadM2103.TabIndex = 1;
+            this.gaugeLoadM2103.TextColor = System.Drawing.Color.Silver;
+            this.gaugeLoadM2103.ThresholdColor = System.Drawing.Color.Firebrick;
+            this.gaugeLoadM2103.ThresholdValue = 10F;
+            this.gaugeLoadM2103.TickColor = System.Drawing.Color.Gray;
             // 
-            // labelControl12
+            // defaultLookAndFeel1
             // 
-            this.labelControl12.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
-            this.labelControl12.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
-            this.labelControl12.Location = new System.Drawing.Point(153, 267);
-            this.labelControl12.Name = "labelControl12";
-            this.labelControl12.Size = new System.Drawing.Size(144, 13);
-            this.labelControl12.TabIndex = 17;
-            this.labelControl12.Text = "Short term trim";
+            this.defaultLookAndFeel1.LookAndFeel.SkinName = "Metropolis";
             // 
-            // combiGauge9
+            // tmrRealtime
             // 
-            this.combiGauge9.BackColor = System.Drawing.Color.Transparent;
-            this.combiGauge9.Location = new System.Drawing.Point(303, 192);
-            this.combiGauge9.Name = "combiGauge9";
-            this.combiGauge9.NumberOfDecimals = 0;
-            this.combiGauge9.Size = new System.Drawing.Size(144, 69);
-            this.combiGauge9.TabIndex = 18;
-            this.combiGauge9.Value = 0F;
-            // 
-            // labelControl13
-            // 
-            this.labelControl13.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
-            this.labelControl13.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
-            this.labelControl13.Location = new System.Drawing.Point(303, 267);
-            this.labelControl13.Name = "labelControl13";
-            this.labelControl13.Size = new System.Drawing.Size(144, 13);
-            this.labelControl13.TabIndex = 19;
-            this.labelControl13.Text = "Long term trim";
+            this.tmrRealtime.Interval = 10;
+            this.tmrRealtime.Tick += new System.EventHandler(this.tmrRealtime_Tick);
             // 
             // Form1
             // 
@@ -2020,7 +2021,7 @@ namespace MotronicSuite
             ((System.ComponentModel.ISupportInitialize)(this.gridView1)).EndInit();
             this.dockRealtimeM2103.ResumeLayout(false);
             this.controlContainer1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.linearGauge1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gaugeLoadM2103)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -2190,20 +2191,20 @@ namespace MotronicSuite
         private DevExpress.XtraEditors.LabelControl labelControl6;
         private ProGauges.CombiGauge gaugeIgnM2103;
         private DevExpress.XtraEditors.LabelControl labelControl5;
-        private ProGauges.LinearGauge linearGauge1;
+        private ProGauges.LinearGauge gaugeLoadM2103;
         private ProGauges.CombiGauge gaugeThrottleM2103;
         private DevExpress.XtraEditors.LabelControl labelControl8;
         private ProGauges.CombiGauge gaugeCoolantM2103;
         private DevExpress.XtraEditors.LabelControl labelControl7;
-        private ProGauges.CombiGauge combiGauge5;
+        private ProGauges.CombiGauge gaugeSpeedM2103;
         private DevExpress.XtraEditors.LabelControl labelControl9;
-        private ProGauges.CombiGauge combiGauge6;
+        private ProGauges.CombiGauge gaugeAirM2103;
         private DevExpress.XtraEditors.LabelControl labelControl10;
-        private ProGauges.CombiGauge combiGauge7;
+        private ProGauges.CombiGauge gaugeLambdaM2103;
         private DevExpress.XtraEditors.LabelControl labelControl11;
-        private ProGauges.CombiGauge combiGauge9;
+        private ProGauges.CombiGauge gaugeLongM2103;
         private DevExpress.XtraEditors.LabelControl labelControl13;
-        private ProGauges.CombiGauge combiGauge8;
+        private ProGauges.CombiGauge gaugeShortM2103;
         private DevExpress.XtraEditors.LabelControl labelControl12;
 
     }

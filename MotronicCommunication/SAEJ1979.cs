@@ -125,6 +125,7 @@ namespace MotronicCommunication
 
         }
 
+        //byte test = 0;
         private List<byte> sendRequest(byte sid, byte pid, out bool success)
         {
             success = false;
@@ -140,6 +141,10 @@ namespace MotronicCommunication
 
             //wait for a response
             List<byte> rcv = m_dev.receive();
+
+            //List<byte> rcv = new List<byte>(){0x48, 0x6b, 0x10, (byte)(0x40 + sid), pid, ++test, 0x10};
+            //rcv.Add(calculateCS(rcv));
+            //System.Threading.Thread.Sleep(100);
 
             List<byte> data;
             //check if the message is valid
