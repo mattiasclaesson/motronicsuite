@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using MotronicTools;
+using System.Drawing;
 
 namespace MotronicCommunication
 {
@@ -25,18 +26,16 @@ namespace MotronicCommunication
             remove { m_j1979.onStatusChanged -= value; }
         }
 
-        private bool _communicationRunning = false; //important
         public override bool CommunicationRunning
         {
-            get { return _communicationRunning; }
-            set { _communicationRunning = value; }
+            get { return m_j1979.CommunicationRunning; }
+            set { m_j1979.CommunicationRunning = value; }
         }
 
-        private bool _IsWaitingForResponse = false;
         public override bool IsWaitingForResponse //rt timer tick needs this
         {
-            get { return _IsWaitingForResponse; }
-            set { _IsWaitingForResponse = value; }
+            get { return m_j1979.IsWaitingForResponse; }
+            set { m_j1979.IsWaitingForResponse = value; }
         }
 
         private bool _enableLogging = false;
@@ -92,14 +91,56 @@ namespace MotronicCommunication
         {
             m_j1979.stop();
         }
-        public override int ReadSensor(int pid)
+        public override List<byte> ReadSensor(int pid, out bool success)
         {
-            return m_j1979.readSensor(pid);
+            return m_j1979.readSensor(pid, out success);
         }
 
         public override SymbolCollection ReadSupportedSensors()
         {
-            return m_j1979.getSupportedSensors();
+            //TODO: supported sensors can be asked from the ECU
+
+            SymbolCollection rt_symbolCollection = new SymbolCollection();
+            SymbolHelper shrpm = new SymbolHelper();
+            shrpm.Varname = "Engine speed";
+            shrpm.Description = "Engine speed";
+            shrpm.Start_address = 0x0C; //this is actually the PID, not any memory address
+            shrpm.Length = 2; //2 bytes long
+            shrpm.CorrectionFactor = 1/4;
+            shrpm.MaxValue = 8000;
+            shrpm.CorrectionOffset = 0;
+            shrpm.Units = "Rpm";
+            shrpm.MinValue = 0;
+            shrpm.Color = Color.Green;
+            rt_symbolCollection.Add(shrpm);
+
+            SymbolHelper shcoolant = new SymbolHelper();
+            shcoolant.Varname = "Engine temperature";
+            shcoolant.Description = "Engine temperature";
+            shcoolant.Start_address = 0x05;
+            shcoolant.Length = 1;
+            shcoolant.MinValue = -40;
+            shcoolant.MaxValue = 120;
+            shcoolant.Units = "Degrees";
+            shcoolant.CorrectionFactor = 1F;
+            shcoolant.CorrectionOffset = -40F;
+            shcoolant.Color = Color.Orange;
+            rt_symbolCollection.Add(shcoolant);
+
+            SymbolHelper shtps = new SymbolHelper();
+            shtps.Varname = "Throttle position";
+            shtps.Description = "Throttle position";
+            shtps.Start_address = 0x11;
+            shtps.Length = 1;
+            shtps.MinValue = 0;
+            shtps.MaxValue = 100;
+            shtps.Units = "TPS %";
+            shtps.CorrectionFactor = 0.39216F;
+            shtps.CorrectionOffset = 0;
+            shtps.Color = Color.DimGray;
+            rt_symbolCollection.Add(shtps);
+
+            return rt_symbolCollection;
         }
 
         private void CastDTCInfo(int dtcCode, int dtcState, int dtcCondition1, int dtcCondition2, int dtcCounter)

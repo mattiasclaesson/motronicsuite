@@ -6194,14 +6194,22 @@ Axis Column: XDFTABLE_Id                 * */
                 foreach (SymbolHelper sh in _realtimeSymbolsM2103)
                 {
                     Console.WriteLine("Reading " + sh.Varname);
-                    bool success = true;
-                    int rcv_value = _ecucomms.ReadSensor(sh.Start_address);
+                    bool success = false;
+                    List<byte> rcv_list = _ecucomms.ReadSensor(sh.Start_address, out success);
+
                     // now update the relevant data
                     if (success)
                     {
+                        int rcv_value = 0;
+
+                        for (int i = 0; i < sh.Length; ++i)
+                        {
+                            rcv_value |= rcv_list[i] << ((sh.Length - i) * 8);
+                        }
+
                         double value = Convert.ToDouble(rcv_value) * sh.CorrectionFactor;
                         value += sh.CorrectionOffset;
-                        Console.WriteLine("Read " + sh.Varname + "value: " + value);
+                        Console.WriteLine("Read " + sh.Varname + " value: " + value);
                         //UpdateRealtimeInformation(sh.Varname, (float)value);
                         //onlineGraphControl1.AddMeasurement(sh.Units, sh.Varname, DateTime.Now, (float)value, sh.MinValue, sh.MaxValue, sh.Color);
                     }
@@ -6215,6 +6223,7 @@ Axis Column: XDFTABLE_Id                 * */
 
         private void tmrRealtime_Tick(object sender, EventArgs e)
         {
+            Console.WriteLine("tmrtick");
             tmrRealtime.Enabled = false;
             try
             {
@@ -6222,10 +6231,12 @@ Axis Column: XDFTABLE_Id                 * */
                 {
                     if (_ecucomms is M2103Communication)
                     {
+                        Console.WriteLine("tmrtick M2103");
                         tmrRealtimeM2103();
                     }
                     else
                     {
+                        Console.WriteLine("tmrtick generic");
                         tmrRealtimeGeneric();
                     }
                 }

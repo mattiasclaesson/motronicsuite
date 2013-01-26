@@ -61,9 +61,10 @@ namespace MotronicCommunication
         public abstract void StopCommunication();
 
         //didnt make these abstract because they are needed only in one comm
-        public virtual int ReadSensor(int pid)
+        public virtual List<byte> ReadSensor(int pid, out bool success)
         {
-            return -1;
+            success = false;
+            return null;
         }
         public virtual SymbolCollection ReadSupportedSensors()
         {

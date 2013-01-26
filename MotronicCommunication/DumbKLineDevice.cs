@@ -102,7 +102,7 @@ namespace MotronicCommunication
         {
             _event.WaitOne();
 
-            List<byte> msg = _rcvMsg;
+            List<byte> msg = new List<byte>(_rcvMsg);
             _rcvMsg.Clear();
 
             return msg;
@@ -499,7 +499,7 @@ namespace MotronicCommunication
                         continue;
                     }
 
-                    Console.WriteLine("Received: " + b.ToString("X2"));
+                    Console.Write(b.ToString("X2") + " ");
                     if (_state == CommunicationState.Start || _state == CommunicationState.WaitForKeywords)
                     {
                         HandleInitByte(b);

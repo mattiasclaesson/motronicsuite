@@ -2,14 +2,22 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using MotronicTools;
-using System.Drawing;
 
 namespace MotronicCommunication
 {
     class SAEJ1979
     {
-        private DumbKLineDevice m_dev = new DumbKLineDevice();
+        private DumbKLineDevice m_dev;
+
+        public SAEJ1979()
+        {
+            m_dev = new DumbKLineDevice();
+        }
+
+        public SAEJ1979(DumbKLineDevice dev)
+        {
+            m_dev = dev;
+        }
 
         public event ICommunication.DTCInfo onDTCInfo;
         public event ICommunication.ECUInfo onECUInfo
@@ -28,6 +36,13 @@ namespace MotronicCommunication
         {
             get { return _communicationRunning; }
             set { _communicationRunning = value; }
+        }
+
+        private bool _IsWaitingForResponse = false;
+        public bool IsWaitingForResponse
+        {
+            get { return _IsWaitingForResponse; }
+            set { _IsWaitingForResponse = value; }
         }
 
         public void initialize(string comportnumber, int ecuaddr, int baudrate)
@@ -49,56 +64,9 @@ namespace MotronicCommunication
             _communicationRunning = false;
         }
 
-        public int readSensor(int pid)
+        public List<byte> readSensor(int pid, out bool success)
         {
-            return sendRequest((byte)0x01, (byte)pid)[5];
-        }
-
-        public SymbolCollection getSupportedSensors()
-        {
-            //TODO: supported sensors can be asked from the ECU
-
-            SymbolCollection rt_symbolCollection = new SymbolCollection();
-            SymbolHelper shrpm = new SymbolHelper();
-            shrpm.Varname = "Engine speed";
-            shrpm.Description = "Engine speed";
-            shrpm.Start_address = 0x0C; //this is actually the PID, not any memory address
-            shrpm.Length = 1;
-            shrpm.CorrectionFactor = 1/4;
-            shrpm.MaxValue = 8000;
-            shrpm.CorrectionOffset = 0;
-            shrpm.Units = "Rpm";
-            shrpm.MinValue = 0;
-            shrpm.Color = Color.Green;
-            rt_symbolCollection.Add(shrpm);
-
-            SymbolHelper shcoolant = new SymbolHelper();
-            shcoolant.Varname = "Engine temperature";
-            shcoolant.Description = "Engine temperature";
-            shcoolant.Start_address = 0x05;
-            shcoolant.Length = 1;
-            shcoolant.MinValue = -40;
-            shcoolant.MaxValue = 120;
-            shcoolant.Units = "Degrees";
-            shcoolant.CorrectionFactor = 1F;
-            shcoolant.CorrectionOffset = -40F;
-            shcoolant.Color = Color.Orange;
-            rt_symbolCollection.Add(shcoolant);
-
-            SymbolHelper shtps = new SymbolHelper();
-            shtps.Varname = "Throttle position";
-            shtps.Description = "Throttle position";
-            shtps.Start_address = 0x11;
-            shtps.Length = 1;
-            shtps.MinValue = 0;
-            shtps.MaxValue = 100;
-            shtps.Units = "TPS %";
-            shtps.CorrectionFactor = 0.39216F;
-            shtps.CorrectionOffset = 0;
-            shtps.Color = Color.DimGray;
-            rt_symbolCollection.Add(shtps);
-
-            return rt_symbolCollection;
+            return sendRequest((byte)0x01, (byte)pid, out success);
         }
 
         private byte calculateCS(List<byte> buf)
@@ -114,20 +82,75 @@ namespace MotronicCommunication
 	        return cs;
         }
 
-        private List<byte> sendRequest(byte sid, byte pid)
+        private bool isMessageValid(List<byte> msg, byte sid, byte pid, out List<byte> data)
         {
+            int i = 0;
+
+            byte checksum = 0;
+            data = new List<byte>();
+            for (i = 0; i < msg.Count - 1; ++i)
+            {
+                switch (i)
+                {
+                    case 0:
+                        if (msg[i] != 0x48) return false;
+                        break;
+                    case 1:
+                        if (msg[i] != 0x6b) return false;
+                        break;
+                    case 2:
+                        //dont care about address
+                        break;
+                    case 3:
+                        if (msg[i] != sid + 0x40) return false;
+                        break;
+                    case 4:
+                        if (msg[i] != pid) return false;
+                        break;
+                    default:
+                        //extract the actual data
+                        data.Add(msg[i]);
+                        break;
+                }
+                checksum += msg[i];
+            }
+
+            if (msg[i] != checksum)
+            {
+                Console.WriteLine("Checksum wrong!");
+                return false;
+            }
+
+            return true;
+
+        }
+
+        private List<byte> sendRequest(byte sid, byte pid, out bool success)
+        {
+            success = false;
+
             List<byte> msg = new List<byte>() { 0x68, 0x6a, 0xf1, sid, pid};
             msg.Add(calculateCS(msg));
 
             //send the request
-            m_dev.send(msg);
+            if (!m_dev.send(msg))
+            {
+                return null;
+            }
 
             //wait for a response
             List<byte> rcv = m_dev.receive();
 
+            List<byte> data;
             //check if the message is valid
+            if (!isMessageValid(rcv, sid, pid, out data))
+            {
+                Console.WriteLine("Receive error: message not valid");
+                return null;
+            }
 
-            return rcv;
+            success = true;
+            return data;
         }
     }
 }
