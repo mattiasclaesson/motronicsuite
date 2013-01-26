@@ -110,7 +110,8 @@ namespace MotronicCommunication
 
         public bool slowInit(string comportnumber, int ecuaddr, int baudrate)
         {
-            //TODO: clear the state of the class!
+            clear();
+
             _ecuaddr = ecuaddr;
             _baudrate = baudrate;
 
@@ -175,6 +176,28 @@ namespace MotronicCommunication
         public void stop()
         {
             Cleanup();
+        }
+
+        private void clear()
+        {
+            _ecustate = ICommunication.ECUState.NotInitialized;
+ 
+            _startctr = 0;
+            _timeout = 0;
+            _wakeupRetries = 1;
+            _echo = 0;
+            _idlesent = false;
+
+            _kw1 = 0;
+            _kw2 = 0;
+
+            _syncseen = false;
+            _kw1seen = false;
+            _kw2seen = false;
+            _invaddrseen = false;
+
+            _sendctr = 0;
+            _state = CommunicationState.Start;
         }
 
         private void Cleanup()
