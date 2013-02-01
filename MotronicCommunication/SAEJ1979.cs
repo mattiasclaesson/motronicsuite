@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace MotronicCommunication
 {
@@ -104,7 +105,30 @@ namespace MotronicCommunication
 
         private bool requestDTCs()
         {
-            List<byte> msg = new List<byte>() { 0x68, 0x6a, 0xf1, READDTC_SID };
+            //need to send SID = 0x01 PID = 0x01 first
+            List<byte> msg = new List<byte>() { 0x68, 0x6a, 0xf1, 0x01, 0x01 };
+            msg.Add(calculateCS(msg));
+
+            //send the request, loop if currently sending idle message
+            int k = 0;
+            for(k = 0; k < 10; ++k)
+            {
+                if (m_dev.send(msg))
+                {
+                    break;
+                }
+                Thread.Sleep(500);
+            }
+
+            //timeout...
+            if (k == 10)
+                return false;
+
+            //this data is not needed...
+            List<byte> rcv = m_dev.receive();
+
+            //then request the actual codes
+            msg = new List<byte>() { 0x68, 0x6a, 0xf1, READDTC_SID };
             msg.Add(calculateCS(msg));
 
             //send the request
@@ -112,10 +136,10 @@ namespace MotronicCommunication
             {
                 return false;
             }
-
-            List<byte> rcv = m_dev.receive();
+            rcv = m_dev.receive();
 
             //List<byte> rcv = new List<byte>() { 0x48, 0x6b, 0x10, (byte)(0x40 + READDTC_SID), 0x01, 0x02, 0x13, 0x01, 0x12, 0x11};
+            //List<byte> rcv = new List<byte>() { 0x48, 0x6b, 0x10, (byte)(0x40 + READDTC_SID), 0x01, 0x02, 0x00, 0x00, 0x00, 0x00 };
             //rcv.Add(calculateCS(rcv));
 
             List<byte> data;
@@ -133,6 +157,7 @@ namespace MotronicCommunication
         {
             List<string> codes = new List<string>();
 
+            bool found = false;
             int i = 0;
             string code;
             while (i < data.Count)
@@ -168,12 +193,15 @@ namespace MotronicCommunication
                 n = data[i + 1] & 0x0F;
                 code += n.ToString();
 
-                CastDTCInfo(code);
-
+                if (code != "P0000")
+                {
+                    CastDTCInfo(code);
+                    found = true;
+                }
                 i += 2;
             }
 
-            return true;
+            return found;
         }
 
         private byte calculateCS(List<byte> buf)
