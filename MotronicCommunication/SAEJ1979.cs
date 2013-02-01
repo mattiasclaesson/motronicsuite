@@ -7,6 +7,9 @@ namespace MotronicCommunication
 {
     class SAEJ1979
     {
+        private const byte READDTC_SID = 0x03;
+        private const byte CLEARDTC_SID = 0x04;
+
         private DumbKLineDevice m_dev;
 
         public SAEJ1979()
@@ -69,6 +72,107 @@ namespace MotronicCommunication
             return sendRequest((byte)0x01, (byte)pid, out success);
         }
 
+        public void readDTCs()
+        {
+            if (!requestDTCs())
+            {
+                CastDTCInfo("EMPTY");
+            }
+        }
+
+        public void clearDTC()
+        {
+            List<byte> msg = new List<byte>() { 0x68, 0x6a, 0xf1, CLEARDTC_SID };
+            msg.Add(calculateCS(msg));
+
+            //send the request
+            if (!m_dev.send(msg))
+            {
+                Console.WriteLine("Sending error");
+                return;
+            }
+
+            List<byte> rcv = m_dev.receive();
+
+            List<byte> data;
+            //check if the message is valid
+            if (!isMessageValid(rcv, CLEARDTC_SID, 0x00, out data, true))
+            {
+                Console.WriteLine("Receive error: message not valid");
+            }
+        }
+
+        private bool requestDTCs()
+        {
+            List<byte> msg = new List<byte>() { 0x68, 0x6a, 0xf1, READDTC_SID };
+            msg.Add(calculateCS(msg));
+
+            //send the request
+            if (!m_dev.send(msg))
+            {
+                return false;
+            }
+
+            List<byte> rcv = m_dev.receive();
+
+            List<byte> data;
+            //check if the message is valid
+            if (!isMessageValid(rcv, READDTC_SID, 0x00, out data, true))
+            {
+                Console.WriteLine("Receive error: message not valid");
+                return false;
+            }
+
+            return parseDTCs(data);
+        }
+
+        private bool parseDTCs(List<byte> data)
+        {
+            List<string> codes = new List<string>();
+
+            int i = 0;
+            string code;
+            while (i < data.Count)
+            {
+                switch ((data[i] >> 6) & 0x03)
+                {
+                    case 0:
+                        code = "P";
+                        break;
+                    case 1:
+                        code = "C";
+                        break;
+                    case 2:
+                        code = "B";
+                        break;
+                    case 3:
+                        code = "U";
+                        break;
+                    default:
+                        code = "X";
+                        return false;
+                }
+
+                int n = data[i] >> 4 & 0x03;
+                code += n.ToString();
+
+                n = data[i]& 0x0F;
+                code += n.ToString();
+
+                n = data[i + 1] >> 4 & 0x0F;
+                code += n.ToString();
+
+                n = data[i + 1] & 0x0F;
+                code += n.ToString();
+
+                CastDTCInfo(code);
+
+                i += 2;
+            }
+
+            return true;
+        }
+
         private byte calculateCS(List<byte> buf)
         {
 	        byte cs = 0;
@@ -82,12 +186,15 @@ namespace MotronicCommunication
 	        return cs;
         }
 
-        private bool isMessageValid(List<byte> msg, byte sid, byte pid, out List<byte> data)
+        private bool isMessageValid(List<byte> msg, byte sid, byte pid, out List<byte> data, bool nopid)
         {
             int i = 0;
-
-            byte checksum = 0;
             data = new List<byte>();
+            byte checksum = 0;
+
+            if (msg.Count < 1)
+                return false;
+
             for (i = 0; i < msg.Count - 1; ++i)
             {
                 switch (i)
@@ -105,6 +212,7 @@ namespace MotronicCommunication
                         if (msg[i] != sid + 0x40) return false;
                         break;
                     case 4:
+                        if (nopid) break;
                         if (msg[i] != pid) return false;
                         break;
                     default:
@@ -148,7 +256,7 @@ namespace MotronicCommunication
 
             List<byte> data;
             //check if the message is valid
-            if (!isMessageValid(rcv, sid, pid, out data))
+            if (!isMessageValid(rcv, sid, pid, out data, false))
             {
                 Console.WriteLine("Receive error: message not valid");
                 return null;
@@ -157,5 +265,15 @@ namespace MotronicCommunication
             success = true;
             return data;
         }
+
+        private void CastDTCInfo(string strcode)
+        {
+            if (onDTCInfo != null)
+            {
+                onDTCInfo(this, new ICommunication.DTCEventArgs(strcode));
+            }
+        }
     }
 }
+
+

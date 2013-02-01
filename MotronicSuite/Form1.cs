@@ -5750,7 +5750,14 @@ Axis Column: XDFTABLE_Id                 * */
                     try
                     {
                         _ecucomms.onStatusChanged += new ICommunication.StatusChanged(_ecucomms_onStatusChanged);
-                        _ecucomms.onDTCInfo += new ICommunication.DTCInfo(_ecucomms_onDTCInfo);
+                        if (_ecucomms is M2103Communication)
+                        {
+                            _ecucomms.onDTCInfo += new ICommunication.DTCInfo(_ecucomms_onDTCInfoM2103);
+                        }
+                        else
+                        {
+                            _ecucomms.onDTCInfo += new ICommunication.DTCInfo(_ecucomms_onDTCInfo);
+                        }
                         _ecucomms.onECUInfo += new ICommunication.ECUInfo(_ecucomms_onECUInfo);
                         _ecucomms.LogFolder = Application.StartupPath;
                         _ecucomms.EnableLogging = false;
@@ -5895,6 +5902,25 @@ Axis Column: XDFTABLE_Id                 * */
         }
 
         private string _connectedECUIdentification = string.Empty;
+
+        void _ecucomms_onDTCInfoM2103(object sender, ICommunication.DTCEventArgs e)
+        {
+            // inform user of DTC codes
+            if (e.Strcode == "EMPTY")
+            {
+                frmInfoBox info = new frmInfoBox("No DTC codes active");
+            }
+            else
+            {
+                // translate DTC code
+                DTCCodeTranslator translator = new DTCCodeTranslator();
+                string dtcdescription = translator.TranslateDTCCode(e.Strcode);
+                frmFaultcodes faults = new frmFaultcodes();
+                faults.onClearCurrentDTC += new frmFaultcodes.onClearDTC(faults_onClearCurrentDTC);
+                faults.addFault(e.Strcode, dtcdescription);
+                faults.Show();
+            }
+        }
 
         void _ecucomms_onDTCInfo(object sender, ICommunication.DTCEventArgs e)
         {

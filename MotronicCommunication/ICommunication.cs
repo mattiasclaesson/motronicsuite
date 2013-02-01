@@ -143,6 +143,17 @@ namespace MotronicCommunication
                 set { _dtccounter = value; }
             }
 
+            private string _strcode;
+            public string Strcode
+            {
+                get { return _strcode; }
+                set { _strcode = value; }
+            }
+            public DTCEventArgs(string strcode)
+            {
+                _strcode = strcode;
+            }
+
             public DTCEventArgs(int dtccode, int dtcstate, int dtccondition1, int dtccondition2, int dtccounter)
             {
                 _dtccode = dtccode;

@@ -14,7 +14,11 @@ namespace MotronicCommunication
 
         private SAEJ1979 m_j1979 = new SAEJ1979();
 
-        public override event ICommunication.DTCInfo onDTCInfo;
+        public override event ICommunication.DTCInfo onDTCInfo
+        {
+            add { m_j1979.onDTCInfo += value; }
+            remove { m_j1979.onDTCInfo -= value; }
+        }
         public override event ICommunication.ECUInfo onECUInfo
         {
             add { m_j1979.onECUInfo += value; }
@@ -56,10 +60,12 @@ namespace MotronicCommunication
 
         public override void ReadDTCCodes(int timeout)
         {
+            m_j1979.readDTCs();
         }
 
         public override void ClearDTC(int timeout)
         {
+            m_j1979.clearDTC();
         }
 
         public override void ReadEprom(string filename, int timeout)
@@ -83,8 +89,7 @@ namespace MotronicCommunication
 
         public override void StartCommunication(string comportnumber, bool HighSpeed)
         {
-            //m_j1979.initialize(comportnumber, INIT_ECU_ADDR, ECU_BAUDRATE);
-            m_j1979.initialize(comportnumber, 0x33, 10400);
+            m_j1979.initialize(comportnumber, INIT_ECU_ADDR, ECU_BAUDRATE);
         }
 
         public override void StopCommunication()
@@ -232,14 +237,6 @@ namespace MotronicCommunication
             rt_symbolCollection.Add(shlong);
 
             return rt_symbolCollection;
-        }
-
-        private void CastDTCInfo(int dtcCode, int dtcState, int dtcCondition1, int dtcCondition2, int dtcCounter)
-        {
-            if (onDTCInfo != null)
-            {
-                onDTCInfo(this, new DTCEventArgs(dtcCode, dtcState, dtcCondition1, dtcCondition2, dtcCounter));
-            }
         }
 
     }

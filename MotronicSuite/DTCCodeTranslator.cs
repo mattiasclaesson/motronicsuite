@@ -202,5 +202,118 @@ namespace MotronicSuite
             return retval;
         }
 
+        public string TranslateDTCCode(string code)
+        {
+            string retval = "Unknown code: " + code.ToString();
+            switch(code)
+            {
+                case "P0102":
+                    retval = "Mass or Volume Air Flow circuit low input";
+                    break;
+                case "P0103":
+                    retval = "Mass or Volume Air Flow circuit high input";
+                    break;
+                case "P1001":
+                    retval = "ELCD valve shorted to ground";
+                    break;
+                case "P1002":
+                    retval = "ELCD valve shorted to battery voltage";
+                    break;
+                case "P1011":
+                    retval = "Cylinder 1 injector shorted to ground or not connected";
+                    break;
+                case "P1012":
+                    retval = "Cylinder 1 injector shorted to battery voltage";
+                    break;
+                case "P1021":
+                    retval = "Cylinder 2 injector shorted to ground or not connected";
+                    break;
+                case "P1022":
+                    retval = "Cylinder 2 injector shorted to battery voltage";
+                    break;
+                case "P1031":
+                    retval = "Cylinder 3 injector shorted to ground or not connected";
+                    break;
+                case "P1032":
+                    retval = "Cylinder 3 injector shorted to battery voltage";
+                    break;
+                case "P1041":
+                    retval = "Cylinder 4 injector shorted to ground or not connected";
+                    break;
+                case "P1042":
+                    retval = "Cylinder 4 injector shorted to battery voltage";
+                    break;
+                case "P0116":
+                    retval = "Coolant temperature sensor";
+                    break;
+                case "P0117":
+                    retval = "Coolant temperature sensor shorted to ground";
+                    break;
+                case "P0118":
+                    retval = "Coolant temperature sensor shorted to battery voltage or not connected";
+                    break;
+                case "P0122":
+                    retval = "Throttle position sensor shorted to ground";
+                    break;
+                case "P0123":
+                    retval = "Throttle position sensor shorted to battery voltage or not connected";
+                    break;
+                case "P0131":
+                    retval = "Oxygen sensor too low voltage";
+                    break;
+                case "P0132":
+                    retval = "Oxygen sensor too high voltage";
+                    break;
+                case "P0134":
+                    retval = "Oxygen sensor no activity";
+                    break;
+                case "P0171":
+                    retval = "Fuel mixture adaptation max value, mixture too lean";
+                    break;
+                case "P0172":
+                    retval = "Fuel mixture adaptation max value, mixture too rich";
+                    break;
+                case "P1500":
+                    retval = "Battery voltage too high";
+                    break;
+                case "P1628":
+                    retval = "Battery voltage too low";
+                    break;
+                case "P1211":
+                    retval = "Idle Air Control valve shorted to ground or not connected";
+                    break;
+                case "P1212":
+                    retval = "Idle Air Control valve shorted to battery voltage";
+                    break;
+                case "P1301":
+                    retval = "Torque limiter shorted to ground";
+                    break;
+                case "P0322":
+                case "P0336":
+                    retval = "Crankshaft Position Sensor fault";
+                    break;
+                case "P0326":
+                    retval = "Knock sensor input too low";
+                    break;
+                case "P0341":
+                    retval = "Camshaft position sensor fault";
+                    break;
+                case "P0501":
+                    retval = "Vehicle speed fault";
+                    break;
+                case "P1621":
+                    retval = "A/C relay shorted to battery voltage";
+                    break;
+                case "P1622":
+                    retval = "A/C relay shorted to ground or not connected";
+                    break;
+                case "P0605":
+                    retval = "ECU internal memory fault";
+                    break;
+            }
+
+            return retval;
+        }
+
     }
 }

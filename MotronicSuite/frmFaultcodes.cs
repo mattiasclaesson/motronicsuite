@@ -31,6 +31,13 @@ namespace MotronicSuite
             //listBox1.Items.Add(faultcode);
         }
 
+        public void addFault(string code, string faultcode)
+        {
+            AddFaultCode(code, faultcode);
+            gridView1.BestFitColumns();
+            //listBox1.Items.Add(faultcode);
+        }
+
         private void AddFaultCode(int code, string description)
         {
             if (gridControl1.DataSource == null)
@@ -57,6 +64,34 @@ namespace MotronicSuite
                 dt.Rows.Add(code, description);
             }
                
+        }
+
+        private void AddFaultCode(string code, string description)
+        {
+            if (gridControl1.DataSource == null)
+            {
+                DataTable dtn = new DataTable();
+                dtn.Columns.Add("Code");
+                dtn.Columns.Add("Description");
+                gridControl1.DataSource = dtn;
+            }
+            DataTable dt = (DataTable)gridControl1.DataSource;
+            bool _found = false;
+            foreach (DataRow dr in dt.Rows)
+            {
+                if (dr["Code"] != DBNull.Value)
+                {
+                    if (dr["Code"].ToString() == code.ToString())
+                    {
+                        _found = true;
+                    }
+                }
+            }
+            if (!_found)
+            {
+                dt.Rows.Add(code, description);
+            }
+
         }
 
 
