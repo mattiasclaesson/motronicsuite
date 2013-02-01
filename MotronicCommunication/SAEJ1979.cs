@@ -115,6 +115,9 @@ namespace MotronicCommunication
 
             List<byte> rcv = m_dev.receive();
 
+            //List<byte> rcv = new List<byte>() { 0x48, 0x6b, 0x10, (byte)(0x40 + READDTC_SID), 0x01, 0x02, 0x13, 0x01, 0x12, 0x11};
+            //rcv.Add(calculateCS(rcv));
+
             List<byte> data;
             //check if the message is valid
             if (!isMessageValid(rcv, READDTC_SID, 0x00, out data, true))
@@ -212,7 +215,11 @@ namespace MotronicCommunication
                         if (msg[i] != sid + 0x40) return false;
                         break;
                     case 4:
-                        if (nopid) break;
+                        if (nopid)
+                        {
+                            data.Add(msg[i]);
+                            break;
+                        }
                         if (msg[i] != pid) return false;
                         break;
                     default:
