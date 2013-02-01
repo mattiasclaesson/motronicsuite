@@ -522,7 +522,7 @@ namespace MotronicCommunication
                         continue;
                     }
 
-                    Console.Write(b.ToString("X2") + " ");
+                    //Console.Write(b.ToString("X2") + " ");
                     if (_state == CommunicationState.Start || _state == CommunicationState.WaitForKeywords)
                     {
                         HandleInitByte(b);
