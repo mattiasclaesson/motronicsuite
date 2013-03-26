@@ -38,6 +38,14 @@ namespace MotronicTools
             set { m_IsM18 = value; }
         }
 
+        private bool m_IsM210 = false;
+
+        public bool IsM210
+        {
+            get { return m_IsM210; }
+            set { m_IsM210 = value; }
+        }
+
         private bool m_IsME7 = false;
 
         public bool IsME7
@@ -128,7 +136,7 @@ namespace MotronicTools
         {
             int[] retval = new int[newvalues.Length];
             MapConfiguration mc = new MapConfiguration();
-            mc.GetCorrectionFactorForMap(this.Identifier, m_IsMotronic44, m_IsLH242, m_IsM18);
+            mc.GetCorrectionFactorForMap(this.Identifier, m_IsMotronic44, m_IsLH242, m_IsM18, m_IsM210);
             int[] tempvals = new int[newvalues.Length];
             
             for (int i = 0; i < newvalues.Length; i++)
@@ -177,7 +185,7 @@ namespace MotronicTools
                 m_calculcatedValues = new float[this.m_length];
                 m_calculcatedIntValues = new int[this.m_length];
                 MapConfiguration mc = new MapConfiguration();
-                mc.GetCorrectionFactorForMap(this.Identifier, m_IsMotronic44, m_IsLH242, m_IsM18);
+                mc.GetCorrectionFactorForMap(this.Identifier, m_IsMotronic44, m_IsLH242, m_IsM18, m_IsM210);
                 m_descr = mc.Description;
                 if(mc.Units != "") m_descr += " [" + mc.Units + "]";
 

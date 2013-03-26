@@ -2454,34 +2454,57 @@ namespace MotronicSuite
             btnCompareM44Halves.Enabled = false;
             if (fi.Length == 0x10000)
             {
-                // MOTRONIC 4.3 file
-                _workingFile = new M43File();
-                _workingFile.onDecodeProgress += new IECUFile.DecodeProgress(_workingFile_onDecodeProgress);
-                FileTools.Instance.CurrentFiletype = FileType.MOTRONIC43;
-                btnCompressorMap.Enabled = true;
-                FileTools.Instance.Currentfile_size = (int)fi.Length;
-                FileTools.Instance.Currentfile = filename;
-                //BuildSymbolTable(FileTools.Instance.Currentfile);
-                SetProgressPercentage("Loading symbol table...", 10);
-                LoadSymbolTable(FileTools.Instance.Currentfile);
-                SetProgressPercentage("Load done...", 90);
-                m_appSettings.Lastfilename = FileTools.Instance.Currentfile;
-                if (!VerifyCRC())
+                if (IsFileM210File(filename))
                 {
-                    if (m_appSettings.AutoChecksum)
+                    // M2103
+                    _workingFile = new M210File();
+                    _workingFile.onDecodeProgress += new IECUFile.DecodeProgress(_workingFile_onDecodeProgress);
+                    if (!silent)
                     {
-                        UpdateCRC(FileTools.Instance.Currentfile);
+                        frmInfoBox info = new frmInfoBox("M 2.10 support is still highly experimental!");
                     }
-                }
-                
+                    FileTools.Instance.CurrentFiletype = FileType.MOTRONIC210;
+                    FileTools.Instance.Currentfile = filename;
+                    FileTools.Instance.Currentfile_size = (int)fi.Length;
 
-                this.Text = "MotronicSuite" + " [" + Path.GetFileName(FileTools.Instance.Currentfile) + "] [" + FileTools.Instance.CurrentFiletype.ToString() + "]";
-                if (m_appSettings.DetermineCommunicationByFileType)
-                {
-                    btnConnectECU.Enabled = true;
+                    LoadSymbolTable(FileTools.Instance.Currentfile);
+                    SetProgressPercentage("Load done...", 90);
+                    m_appSettings.Lastfilename = FileTools.Instance.Currentfile;
+
+                    this.Text = "MotronicSuite" + " [" + Path.GetFileName(FileTools.Instance.Currentfile) + "] [" + FileTools.Instance.CurrentFiletype.ToString() + "]";
+                    SetProgressPercentage("Idle", 100);
                 }
-                barButtonItem8.Enabled = true;
-                SetProgressPercentage("Idle", 100);
+                else
+                {
+                    // MOTRONIC 4.3 file
+                    _workingFile = new M43File();
+                    _workingFile.onDecodeProgress += new IECUFile.DecodeProgress(_workingFile_onDecodeProgress);
+                    FileTools.Instance.CurrentFiletype = FileType.MOTRONIC43;
+                    btnCompressorMap.Enabled = true;
+                    FileTools.Instance.Currentfile_size = (int)fi.Length;
+                    FileTools.Instance.Currentfile = filename;
+                    //BuildSymbolTable(FileTools.Instance.Currentfile);
+                    SetProgressPercentage("Loading symbol table...", 10);
+                    LoadSymbolTable(FileTools.Instance.Currentfile);
+                    SetProgressPercentage("Load done...", 90);
+                    m_appSettings.Lastfilename = FileTools.Instance.Currentfile;
+                    if (!VerifyCRC())
+                    {
+                        if (m_appSettings.AutoChecksum)
+                        {
+                            UpdateCRC(FileTools.Instance.Currentfile);
+                        }
+                    }
+
+
+                    this.Text = "MotronicSuite" + " [" + Path.GetFileName(FileTools.Instance.Currentfile) + "] [" + FileTools.Instance.CurrentFiletype.ToString() + "]";
+                    if (m_appSettings.DetermineCommunicationByFileType)
+                    {
+                        btnConnectECU.Enabled = true;
+                    }
+                    barButtonItem8.Enabled = true;
+                    SetProgressPercentage("Idle", 100);
+                }
             }
             else if (fi.Length == 0x20000)
             {
@@ -2664,6 +2687,16 @@ namespace MotronicSuite
         void _workingFile_onDecodeProgress(object sender, DecodeProgressEventArgs e)
         {
             SetProgressPercentage(e.Info, e.Progress);
+        }
+
+        private bool IsFileM210File(string filename)
+        {
+            byte[] alldata = File.ReadAllBytes(filename);
+            for (int i = 0; i < alldata.Length - 5; i++)
+            {
+                if (alldata[i] == 'M' && alldata[i + 1] == '2' && alldata[i + 2] == '.' && alldata[i + 3] == '1' && alldata[i + 4] == '0') return true;
+            }
+            return false;
         }
 
         private bool IsFileM18File(string filename)

@@ -36,7 +36,7 @@ namespace MotronicTools
             set { m_units = value; }
         }
 
-        public void GetCorrectionFactorForMap(int id, bool isM44, bool isLH242, bool isM18)
+        public void GetCorrectionFactorForMap(int id, bool isM44, bool isLH242, bool isM18, bool isM210)
         {
             m_correctionfactor = 1;
             m_correctionoffset = 0;
@@ -120,6 +120,7 @@ namespace MotronicTools
                     m_description = "Coolant temperature";
                     m_units = "Degrees celcius";
                     break;
+                case 0x3A:
                 case 0x3B: // Engine speed (rpm)
                     m_correctionfactor = 40;
                     if (isM44)
@@ -130,6 +131,7 @@ namespace MotronicTools
                     m_description = "Engine speed";
                     m_units = "RPM";
                     break;
+                case 0x3F:
                 case 0x40: // Internal load signal
                 case 0xF8B1:
                     m_correctionfactor = 0.05F;

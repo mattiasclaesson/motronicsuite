@@ -16,6 +16,7 @@ namespace MotronicSuite
         MOTRONIC44,
         MOTRONIC18,
         MOTRONICME7,
+        MOTRONIC210,
         UNKNOWN
     }
     /// <summary>
