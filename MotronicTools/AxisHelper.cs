@@ -135,7 +135,17 @@ namespace MotronicTools
         public int[] CalculateOriginalValues(float[] newvalues)
         {
             int[] retval = new int[newvalues.Length];
-            MapConfiguration mc = new MapConfiguration();
+
+            MapConfiguration mc;
+            if (m_IsM210)
+            {
+                mc = new MapConfigurationM210();
+            }
+            else
+            {
+                mc = new MapConfiguration();
+            }
+
             mc.GetCorrectionFactorForMap(this.Identifier, m_IsMotronic44, m_IsLH242, m_IsM18, m_IsM210);
             int[] tempvals = new int[newvalues.Length];
             
@@ -184,7 +194,18 @@ namespace MotronicTools
                  * * */
                 m_calculcatedValues = new float[this.m_length];
                 m_calculcatedIntValues = new int[this.m_length];
-                MapConfiguration mc = new MapConfiguration();
+
+                MapConfiguration mc;
+                if (m_IsM210)
+                {
+                    mc = new MapConfigurationM210();
+                }
+                else
+                {
+                    mc = new MapConfiguration();
+                }
+
+
                 mc.GetCorrectionFactorForMap(this.Identifier, m_IsMotronic44, m_IsLH242, m_IsM18, m_IsM210);
                 m_descr = mc.Description;
                 if(mc.Units != "") m_descr += " [" + mc.Units + "]";

@@ -8,21 +8,21 @@ namespace MotronicTools
     {
         private float m_correctionfactor = 1;
 
-        public float Correctionfactor
+        public virtual float Correctionfactor
         {
             get { return m_correctionfactor; }
             set { m_correctionfactor = value; }
         }
         private float m_correctionoffset = 0;
 
-        public float Correctionoffset
+        public virtual float Correctionoffset
         {
             get { return m_correctionoffset; }
             set { m_correctionoffset = value; }
         }
         private string m_description = string.Empty;
 
-        public string Description
+        public virtual string Description
         {
             get { return m_description; }
             set { m_description = value; }
@@ -30,13 +30,13 @@ namespace MotronicTools
 
         private string m_units = string.Empty;
 
-        public string Units
+        public virtual string Units
         {
             get { return m_units; }
             set { m_units = value; }
         }
 
-        public void GetCorrectionFactorForMap(int id, bool isM44, bool isLH242, bool isM18, bool isM210)
+        public virtual void GetCorrectionFactorForMap(int id, bool isM44, bool isLH242, bool isM18, bool isM210)
         {
             m_correctionfactor = 1;
             m_correctionoffset = 0;

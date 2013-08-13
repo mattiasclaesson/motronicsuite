@@ -50,6 +50,7 @@
     <Compile Include="AxisHelper.cs" />
     <Compile Include="CellHelper.cs" />
     <Compile Include="CellHelperCollection.cs" />
+    <Compile Include="MapConfigurationM210.cs" />
     <Compile Include="SymbolBlockCollection.cs" />
     <Compile Include="LogFilter.cs" />
     <Compile Include="LogFilterCollection.cs" />

@@ -544,6 +544,50 @@ namespace MotronicSuite
             }
         }
 
+        public void GetAxisDescr(AxisCollection axis, int address, out string xdescr, out string ydescr)
+        {
+            xdescr = "";
+            ydescr = "";
+
+            // let's see if there are leading axis info to this table
+
+            foreach (AxisHelper ah in axis)
+            {
+                int endaddress = ah.Addressinfile + ah.Length + 2;
+                if (endaddress == address)
+                {
+                    // this is an axis for this table... 
+                    // see if there is another one that leads 
+                    int[] yaxis;
+                    string y_descr = string.Empty;
+                    if (Helpers.Instance.AxisHasLeadingAxis(axis, ah.Addressinfile, out yaxis, out y_descr))
+                    {
+                        ydescr = y_descr;
+                        if (ah.Descr != string.Empty)
+                        {
+                            xdescr = ah.Descr;
+                        }
+                        else
+                        {
+                            xdescr = ah.Identifier.ToString();
+                        }
+                    }
+                    else
+                    {
+                        if (ah.Descr != string.Empty)
+                        {
+                            xdescr = ah.Descr;
+                        }
+                        else
+                        {
+                            xdescr = ah.Identifier.ToString();
+                        }
+                    }
+
+                }
+            }
+        }
+
         public bool CheckForAxisPresent(string filename, int startaddress, AxisCollection axis, int lengthOfPreviousAxis)
         {
             bool retval = false;

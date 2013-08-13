@@ -695,10 +695,10 @@ namespace MotronicSuite
                 tabdet.AllAxis = _workingFile.Axis;
                 tabdet.XAxisSymbol = Helpers.Instance.GetXaxisSymbol(FileTools.Instance.Currentfile, _workingFile.Symbols, _workingFile.Axis, sh.Varname, sh.Flash_start_address);
                 tabdet.YAxisSymbol = Helpers.Instance.GetYAxisSymbol(FileTools.Instance.Currentfile, _workingFile.Symbols, _workingFile.Axis, sh.Varname, sh.Flash_start_address);
-                if (tabdet.XAxisSymbol.Flash_start_address == 0 && sh.Length == 8)
+                /*if (tabdet.XAxisSymbol.Flash_start_address == 0 && sh.Length == 8)
                 {
                     tabdet.XAxisSymbol = Helpers.Instance.GetXaxisSymbol(FileTools.Instance.Currentfile, _workingFile.Symbols, _workingFile.Axis, "Overboost map", Helpers.Instance.GetSymbolAddress(_workingFile.Symbols, "Overboost map"));
-                }
+                }*/
                 tabdet.CurrentFiletype = FileTools.Instance.CurrentFiletype;
                 int[] xvals = new int[1];
                 int[] yvals = new int[1];
@@ -765,6 +765,11 @@ namespace MotronicSuite
                         {
                             ahx.IsLH242 = true;
                         }
+                        else if (FileTools.Instance.CurrentFiletype == FileType.MOTRONIC210)
+                        {
+                            ahx.IsM210 = true;
+                        }
+
                         ahx.CalculateRealValues();
                         xvals = ahx.Values; // <GS-01022011>
                         AxisHelper ahy = new AxisHelper();
@@ -777,6 +782,10 @@ namespace MotronicSuite
                         else if (FileTools.Instance.CurrentFiletype == FileType.LH242)
                         {
                             ahy.IsLH242 = true;
+                        }
+                        else if (FileTools.Instance.CurrentFiletype == FileType.MOTRONIC210)
+                        {
+                            ahy.IsM210 = true;
                         }
 
                         ahy.CalculateRealValues();
@@ -805,14 +814,14 @@ namespace MotronicSuite
                     cols = xvals.Length;
                     rows = yvals.Length;
                 }
-                if (xvals.Length == 1 && yvals.Length == 1 && sh.Length == 8)
+                /*if (xvals.Length == 1 && yvals.Length == 1 && sh.Length == 8)
                 {
                     Helpers.Instance.GetAxisValues(FileTools.Instance.Currentfile, _workingFile.Symbols, _workingFile.Axis, "Overboost map", Helpers.Instance.GetSymbolAddress(_workingFile.Symbols, "Overboost map"), rows, cols, out xvals, out yvals, out xdescr, out ydescr);
                     tabdet.X_axisvalues = xvals;
                     tabdet.X_axis_name = xdescr;
                     cols = 8;
                     rows = 1;
-                }
+                }*/
                 dockPanel = dockManager1.AddPanel(DevExpress.XtraBars.Docking.DockingStyle.Right);
 
                 int dw = 650;
@@ -2260,6 +2269,10 @@ namespace MotronicSuite
             else if (FileTools.Instance.CurrentFiletype == FileType.LH24)
             {
                 Console.WriteLine("Should update LH24 checksum here");
+            }
+            else if (FileTools.Instance.CurrentFiletype == FileType.MOTRONIC210)
+            {
+                _workingFile.UpdateChecksum();
             }
             else if (FileTools.Instance.CurrentFiletype == FileType.LH242)
             {
@@ -3796,6 +3809,24 @@ Axis Column: XDFTABLE_Id                 * */
                     info.DamosInfo = _workingFile.GetDamosInfo();
                     info.SpeedLimit = FileTools.Instance.Speedlimit;
                     info.RpmLimit = FileTools.Instance.Rpmlimit;
+
+                }
+                else if (FileTools.Instance.CurrentFiletype == FileType.MOTRONIC210)
+                {
+                    string checksum = "Ok";
+                    if (!_workingFile.ValidateChecksum()) checksum = "Failed";
+                    info.Checksum = checksum;
+                    string hardwareID = string.Empty;
+                    string softwareID = string.Empty;
+                    string partnumber = string.Empty;
+                    string damosinfo = string.Empty;
+                    //DecodeM43FileInformation(FileTools.Instance.Currentfile, out hardwareID, out softwareID, out partnumber, out damosinfo);
+                    //info.PartNumber = _workingFile.GetHardwareID();
+                    //info.SoftwareID = _workingFile.GetSoftwareVersion();
+                    //info.HardwareID = _workingFile.GetPartnumber();
+                    //info.DamosInfo = _workingFile.GetDamosInfo();
+                    //info.SpeedLimit = FileTools.Instance.Speedlimit;
+                    //info.RpmLimit = FileTools.Instance.Rpmlimit;
 
                 }
                 else if (FileTools.Instance.CurrentFiletype == FileType.MOTRONIC44)

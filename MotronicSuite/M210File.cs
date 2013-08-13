@@ -309,7 +309,7 @@ namespace MotronicSuite
                             }
                             break;
                         case 5:
-                            Console.WriteLine("readstate = 5 @ address: " + t.ToString("X4"));
+                            //Console.WriteLine("readstate = 5 @ address: " + t.ToString("X4"));
                             // we're reading addresses now
                             if (b < 0xC8)
                             {
@@ -347,7 +347,7 @@ namespace MotronicSuite
             SetProgressPercentage("Adding axis", 40);
 
             Console.WriteLine("Found addresses: " + m_tempaxis.Count);
-            /*
+            
             int duplicates = 0;
             foreach (AxisHelper ah in m_tempaxis)
             {
@@ -367,13 +367,14 @@ namespace MotronicSuite
             }
 
             Console.WriteLine("Duplicate addresses found: " + duplicates);
-            */
+            
 
             SymbolCollection m_Unknown_symbols = new SymbolCollection();
             foreach (AxisHelper ah in m_tempaxis)
             {
                 // get the address information for this axis
                 //Console.WriteLine("Filling information for axis at address: " + ah.Addressinfile.ToString("X4"));
+                ah.IsM210 = true;
                 if (FillAxisInformation(filename, ah))
                 {
                     axis.Add(ah);
@@ -394,7 +395,7 @@ namespace MotronicSuite
             foreach (AxisHelper ah in axis)
             {
                 int newaxisstart = ah.Addressinfile + ah.Length + 2;
-                if (Helpers.Instance.CheckForAxisPresent(filename, newaxisstart, m_tempaxis, ah.Length))
+                if (CheckForAxisPresent(filename, newaxisstart, m_tempaxis, ah.Length))
                 {
                     //Console.WriteLine("Possible Y axis at address : " + newaxisstart.ToString("X4"));
                     AxisHelper ahnew = new AxisHelper();
@@ -407,7 +408,7 @@ namespace MotronicSuite
             // alsnog toevoegen aan collectie
             foreach (AxisHelper ahnew in m_tempaxis)
             {
-
+                ahnew.IsM210 = true;
                 if (FillAxisInformation(filename, ahnew))
                 {
                     axis.Add(ahnew);
@@ -447,6 +448,11 @@ namespace MotronicSuite
                 {
                     // is there a gap?
                     int endofpreviousaxis = address + length + 2;
+
+                    if (ah.Addressinfile == 0xC88B)
+                    {
+                        Console.WriteLine("endofpreviousaxis " + endofpreviousaxis.ToString("X4") + "address " + address.ToString("X4") + "length " + length.ToString("X4"));
+                    }
 
                     if (endofpreviousaxis < ah.Addressinfile)
                     {
@@ -563,6 +569,43 @@ namespace MotronicSuite
             Console.WriteLine("Found symbols: " + symbols.Count);
 
 
+            //add injector constant
+            SymbolHelper sym = new SymbolHelper();
+            sym.Varname = "Injector constant";
+            sym.Category = "Constants";
+            sym.Length = 1;
+            //sh.Symbol_number = symbolnumber++;
+
+            sym.Flash_start_address = 0xC51B;
+            sym.Cols = 1;
+            sym.Rows = 1;
+            symbols.Add(sym);
+
+            
+            foreach (SymbolHelper sh in symbols)
+            {
+                string xdescr = "";
+                string ydescr = "";
+                Helpers.Instance.GetAxisDescr(axis, sh.Flash_start_address, out xdescr, out ydescr);
+
+                //Console.WriteLine("xdescr " + xdescr + " " + "ydescr " + ydescr);
+
+                if (xdescr == "Coolant temperature [Degrees celcius]" || ydescr == "Coolant temperature [Degrees celcius]")
+                {
+                    sh.Category = "Temperature compensation";
+                }
+                else if (xdescr == "Coolant temp ADC value [raw ADC]" && ydescr == "")
+                {
+                    sh.Category = "Temperature compensation";
+                    sh.Varname = "Coolant sensor linearization";
+                }
+                else if (xdescr == "Battery voltage [Volt]" || ydescr == "Battery voltage [Volt]")
+                {
+                    sh.Category = "Battery voltage compensation";
+                }
+
+            }
+
             // try to determine ignition maps probablility
             SymbolCollection ignition_maps = new SymbolCollection();
             foreach (SymbolHelper sh in symbols)
@@ -596,6 +639,8 @@ namespace MotronicSuite
                     }
                 }
             }
+
+            //findMapGroups(filename);
 
             SetProgressPercentage("Sorting data", 90);
             // sort the symbol on length, biggest on top
@@ -646,15 +691,60 @@ namespace MotronicSuite
             return false;
         }
 
+        private uint CalculateM210CRC(string filename)
+        {
+            FileStream fs = new FileStream(filename, FileMode.Open);
+            fs.Position = 0;
+            uint volvocrc1 = 0;
+            using (BinaryReader br = new BinaryReader(fs))
+            {
+                while (fs.Position < 0xFF00)
+                {
+                    volvocrc1 += (uint)br.ReadByte();
+                }
+            }
+            fs.Close();
+            fs.Dispose();
+            volvocrc1 &= 0x00FFFF;
+            return volvocrc1;
+        }
+
         public override bool ValidateChecksum()
         {
-            Console.WriteLine("Should verify LH24 checksum here");
-            return true;
+            bool retval = false;
+            uint crc = CalculateM210CRC(FileTools.Instance.Currentfile);
+            byte[] crcbytes = FileTools.Instance.readdatafromfile(FileTools.Instance.Currentfile, 0xFF00, 2, false);
+            uint readcrc = (Convert.ToUInt32(crcbytes.GetValue(0)) * 256) + Convert.ToUInt32(crcbytes.GetValue(1));
+            if (crc == readcrc) retval = true;
+            return retval;
         }
 
         public override void UpdateChecksum()
         {
-            Console.WriteLine("Should update LH24 checksum here");
+            FileStream fs = new FileStream(m_currentFile, FileMode.Open);
+            fs.Position = 0;
+            uint volvocrc = 0;
+            using (BinaryReader br = new BinaryReader(fs))
+            {
+                while (fs.Position < 0xFF00)
+                {
+                    volvocrc += (uint)br.ReadByte();
+                }
+            }
+            fs.Close();
+            fs.Dispose();
+            // CRC is stored @ 0xFF00 and 0xFF01
+            FileStream fsi1 = File.OpenWrite(m_currentFile);
+            using (BinaryWriter bw = new BinaryWriter(fsi1))
+            {
+                fsi1.Position = 0xFF00;
+                byte b1 = (byte)((volvocrc & 0x00FF00) / 256);
+                byte b2 = (byte)(volvocrc & 0x0000FF);
+                bw.Write(b1);
+                bw.Write(b2);
+            }
+            fsi1.Close();
+            fsi1.Dispose();
         }
 
         public override double GetOffsetForMap(string symbolname)
@@ -709,6 +799,57 @@ namespace MotronicSuite
             m_fileInfo.Symbols = symbols;
             m_fileInfo.Axis = axis;
             return m_fileInfo;
+        }
+
+        private bool CheckForAxisPresent(string filename, int startaddress, AxisCollection axis, int lengthOfPreviousAxis)
+        {
+            bool retval = false;
+            FileStream fs = new FileStream(filename, FileMode.Open);
+            fs.Position = startaddress;
+            using (BinaryReader br = new BinaryReader(fs))
+            {
+                int id = (int)br.ReadByte();
+                int length = (int)br.ReadByte();
+                if (id >= 0x03 && id <= 0x70 && length > 1 && length < 32)
+                {
+                    // now also check wether a new axis starts (more likely) at the location AFTER this,
+                    // that is, if we assume that the data here is actually a 2D map in stead of an axis
+                    fs.Position = startaddress + lengthOfPreviousAxis;
+                    int id2 = (int)br.ReadByte();
+                    int len2 = (int)br.ReadByte();
+                    if (id2 == 0x3A || id2 == 0x37 || id2 == 0x36 || id2 == 0x3F || id2 == 0x03 || id2 == 0x04 || id2 == 0x07 || id2 == 0x2E || id2 == 0x30 || id2 == 0x33 || id2 == 0x5C || id2 == 0x6D || id2 == 0x8B || id2 == 0x99)
+                    {
+                        if (len2 > 1 && len2 < 32)
+                        {
+                            int pos = startaddress + lengthOfPreviousAxis;
+                            //Console.WriteLine("Overruled axis detection at : " + pos.ToString("X4"));
+                            return false;
+                        }
+                    }
+
+                    if (!Helpers.Instance.AxisPresentInCollection(startaddress, axis))
+                    {
+                        retval = true;
+                    }
+                }
+            }
+            return retval;
+        }
+
+        private void findMapGroups(string filename)
+        {
+            List<int> groupaddr;
+
+
+            FileStream fs = new FileStream(filename, FileMode.Open);
+            using (BinaryReader br = new BinaryReader(fs))
+            {
+                for (int t = 0; t < fs.Length; t++)
+                {
+                    byte b = br.ReadByte();
+                }
+            }
+
         }
     }
 }
