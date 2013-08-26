@@ -576,7 +576,7 @@ namespace MotronicSuite
             sym.Length = 1;
             //sh.Symbol_number = symbolnumber++;
 
-            sym.Flash_start_address = 0xC51B;
+            sym.Flash_start_address = 0xA005;
             sym.Cols = 1;
             sym.Rows = 1;
             symbols.Add(sym);
@@ -603,6 +603,24 @@ namespace MotronicSuite
                 {
                     sh.Category = "Battery voltage compensation";
                 }
+
+                if (sh.Flash_start_address == 0xC887)
+                {
+                    sh.Varname = "Engine running RPM limit";
+                }
+                if (sh.Flash_start_address == 0xC975)
+                {
+                    sh.Varname = "Cranking enrichment";
+                }
+
+                if (sh.Flash_start_address == 0xD047 ||
+                    sh.Flash_start_address == 0xD063 ||
+                    sh.Flash_start_address == 0xD35D ||
+                    sh.Flash_start_address == 0xD379)
+                {
+                    sh.Varname = "Temperature compensation";
+                }
+
 
             }
 
