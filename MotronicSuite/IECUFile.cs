@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Data;
 using MotronicTools;
 
 namespace MotronicSuite
@@ -12,11 +10,12 @@ namespace MotronicSuite
         LH24,
         LH242,
         ML11,
+        MOTRONIC210,
         MOTRONIC43,
         MOTRONIC44,
         MOTRONIC18,
         MOTRONICME7,
-        MOTRONIC210,
+        MOTRONICME96,
         UNKNOWN
     }
     /// <summary>

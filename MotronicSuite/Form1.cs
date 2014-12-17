@@ -2665,6 +2665,27 @@ namespace MotronicSuite
                 barButtonItem8.Enabled = false;
 
             }
+            else if (fi.Length == 0x200000)
+            {
+                // ME9
+                _workingFile = new ME9File();
+                _workingFile.onDecodeProgress += new IECUFile.DecodeProgress(_workingFile_onDecodeProgress);
+                frmInfoBox info = new frmInfoBox("ME9.6 support is only for experimental purposes!");
+                FileTools.Instance.CurrentFiletype = FileType.MOTRONICME96;
+                FileTools.Instance.Currentfile = filename;
+                FileTools.Instance.Currentfile_size = (int)fi.Length;
+                LoadSymbolTable(FileTools.Instance.Currentfile);
+                SetProgressPercentage("Load done...", 90);
+                m_appSettings.Lastfilename = FileTools.Instance.Currentfile;
+                this.Text = "MotronicSuite" + " [" + Path.GetFileName(FileTools.Instance.Currentfile) + "] [" + FileTools.Instance.CurrentFiletype.ToString() + "]";
+                SetProgressPercentage("Idle", 100);
+                if (m_appSettings.DetermineCommunicationByFileType)
+                {
+                    btnConnectECU.Enabled = true;
+                }
+                barButtonItem8.Enabled = false;
+
+            }
             else
             {
                 SetProgressPercentage("Failed to open file", 100);
@@ -3027,6 +3048,17 @@ namespace MotronicSuite
                 if (filelength == 0x80000 || filelength == 0x100000)
                 {
                     _compareFile = new ME7File();
+                    _compareFile.SelectFile(filename);
+                    _compareFile.ParseFile();
+                    compare_symbols = _compareFile.Symbols;
+                    compare_axis = _compareFile.Axis;
+                }
+            }
+            else if (FileTools.Instance.CurrentFiletype == FileType.MOTRONICME96)
+            {
+                if (filelength == 0x200000)
+                {
+                    _compareFile = new ME9File();
                     _compareFile.SelectFile(filename);
                     _compareFile.ParseFile();
                     compare_symbols = _compareFile.Symbols;
@@ -4437,7 +4469,7 @@ Axis Column: XDFTABLE_Id                 * */
                 m_msiUpdater.Apppath = System.Windows.Forms.Application.UserAppDataPath;
                 m_msiUpdater.onDataPump += new msiupdater.DataPump(m_msiUpdater_onDataPump);
                 m_msiUpdater.onUpdateProgressChanged += new msiupdater.UpdateProgressChanged(m_msiUpdater_onUpdateProgressChanged);
-                m_msiUpdater.CheckForUpdates("Global", "http://trionic.mobixs.eu/Motronic/", "", "", false);
+                m_msiUpdater.CheckForUpdates("http://develop.trionictuning.com/Motronic/", "motronic", "MotronicSuite.msi");
             }
             catch (Exception E)
             {
@@ -5019,7 +5051,7 @@ Axis Column: XDFTABLE_Id                 * */
             {
                 if (m_msiUpdater != null)
                 {
-                    m_msiUpdater.CheckForUpdates("Global", "http://trionic.mobixs.eu/Motronic/", "", "", false);
+                    m_msiUpdater.CheckForUpdates("http://develop.trionictuning.com/Motronic/", "motronic", "MotronicSuite.msi");
                 }
             }
             catch (Exception E)

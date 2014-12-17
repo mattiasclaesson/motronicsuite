@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Xml;
 using System.IO;
 
@@ -11,14 +10,12 @@ namespace MotronicSuite
     class msiupdater
     {
         private Version m_currentversion;
-        private string m_customer = "Global";
-        private string m_server = "http://trionic.mobixs.eu/Motronic/";
-        private string m_username = "";
-        private string m_password = "";
+        private string m_server = "";
         private Version m_NewVersion;
         private string m_apppath = "";
-        private bool m_fromFileLocation = false;
-        private bool m_blockauto_updates = false;
+        private bool m_blockauto_updates;
+        private string m_tagName = "";
+        private string m_msi;
 
         public bool Blockauto_updates
         {
@@ -91,11 +88,11 @@ namespace MotronicSuite
 
             public MSIUpdateProgressEventArgs(Int32 NoFiles, Int32 NoFilesDone, Int32 PercentageDone, Int32 NoBytes, Int32 NoBytesDone)
             {
-                this._NoFiles = NoFiles;
-                this._NoFilesDone = NoFilesDone;
-                this._PercentageDone = PercentageDone;
-                this._NoBytes = NoBytes;
-                this._NoBytesDone = NoBytesDone;
+                _NoFiles = NoFiles;
+                _NoFilesDone = NoFilesDone;
+                _PercentageDone = PercentageDone;
+                _NoBytes = NoBytes;
+                _NoBytesDone = NoBytesDone;
             }
         }
 
@@ -115,7 +112,6 @@ namespace MotronicSuite
                     return _xmlFile;
                 }
             }
-
             public string Data
             {
                 get
@@ -144,32 +140,27 @@ namespace MotronicSuite
                     return _Version;
                 }
             }
-
-
-
             public MSIUpdaterEventArgs(string Data, bool Update, bool mVersion2High, Version NewVersion, string xmlfile)
             {
-                this._Data = Data;
-                this._UpdateAvailable = Update;
-                this._Version2High = mVersion2High;
-                this._Version = NewVersion;
-                this._xmlFile = xmlfile;
+                _Data = Data;
+                _UpdateAvailable = Update;
+                _Version2High = mVersion2High;
+                _Version = NewVersion;
+                _xmlFile = xmlfile;
             }
         }
 
         public msiupdater(Version CurrentVersion)
         {
             m_currentversion = CurrentVersion;
-            m_NewVersion = new Version("1.0.0.0");
+            m_NewVersion = new Version("0.0.0.0");
         }
 
-        public void CheckForUpdates(string customer, string server, string username, string password, bool FromFile)
+        public void CheckForUpdates(string server, string tagName, string msi)
         {
             m_server = server;
-            m_customer = customer;
-            m_username = username;
-            m_password = password;
-            m_fromFileLocation = FromFile;
+            m_tagName = tagName;
+            m_msi = msi;
             if (!m_blockauto_updates)
             {
                 System.Threading.Thread t = new System.Threading.Thread(updatecheck);
@@ -179,7 +170,7 @@ namespace MotronicSuite
 
         public void ExecuteUpdate(Version ver)
         {
-            string command = "http://trionic.mobixs.eu/Motronic/" + ver.ToString() + "/Motronic.msi";
+            string command = m_server + ver.ToString() + "/" + m_msi;
             try
             {
                 System.Diagnostics.Process.Start(command);
@@ -212,7 +203,6 @@ namespace MotronicSuite
 
                 try
                 {
-                    //request.Proxy = System.Net.WebProxy.GetDefaultProxy();
                     request.Proxy.Credentials = System.Net.CredentialCache.DefaultNetworkCredentials;
                 }
                 catch (Exception proxyE)
@@ -308,41 +298,37 @@ namespace MotronicSuite
         {
             string URLString="";
             string XMLResult="";
-            //string VehicleString;
             bool m_updateavailable = false;
             bool m_version_toohigh = false;
-            Version maxversion = new Version("1.0.0.0");
+            Version maxversion = new Version("0.0.0.0");
             File.Delete(Apppath + "\\input.xml");
-            File.Delete(Apppath + "\\Notes.xml"); 
+            File.Delete(Apppath + "\\Notes.xml");
+
             try
             {
-                if (m_customer.Length > 0)
+                URLString = m_server + "version.xml";
+                XMLResult = GetPageHTML(URLString, 10);
+                using (StreamWriter xmlfile = new StreamWriter(Apppath + "\\input.xml", false, System.Text.Encoding.ASCII, 2048))
                 {
-                    URLString = "http://trionic.mobixs.eu/Motronic/version.xml";
-                    XMLResult = GetPageHTML(URLString, 10);
-                    using (StreamWriter xmlfile = new StreamWriter(Apppath + "\\input.xml", false, System.Text.Encoding.ASCII, 2048))
-                    {
-                        xmlfile.Write(XMLResult);
-                        xmlfile.Close();
-                    }
-                    URLString = "http://trionic.mobixs.eu/Motronic/Notes.xml";
-                    XMLResult = GetPageHTML(URLString, 10);
-                    using (StreamWriter xmlfile = new StreamWriter(Apppath + "\\Notes.xml", false, System.Text.Encoding.ASCII, 2048))
-                    {
-                        xmlfile.Write(XMLResult);
-                        xmlfile.Close();
-                    }
+                    xmlfile.Write(XMLResult);
+                    xmlfile.Close();
+                }
+                URLString = m_server + "Notes.xml";
+                XMLResult = GetPageHTML(URLString, 10);
+                using (StreamWriter xmlfile = new StreamWriter(Apppath + "\\Notes.xml", false, System.Text.Encoding.ASCII, 2048))
+                {
+                    xmlfile.Write(XMLResult);
+                    xmlfile.Close();
                 }
 
-                /*using (StreamWriter logfile = new StreamWriter(Apppath + "\\update.log", true, System.Text.Encoding.ASCII, 2048))
+                using (StreamWriter logfile = new StreamWriter(Apppath + "\\update.log", true, System.Text.Encoding.ASCII, 2048))
                 {
                     logfile.WriteLine("Current version: " + m_currentversion);
-                    logfile.WriteLine("Customer: " + "Global");
                     logfile.WriteLine("Server: " + m_server);
                     logfile.WriteLine("URLString: " + URLString);
                     logfile.WriteLine("XMLResult: " + XMLResult);
                     logfile.Close();
-                }*/
+                }
 
                 XmlDocument doc;
                 try
@@ -353,7 +339,7 @@ namespace MotronicSuite
                     // Add any other properties that would be useful to store
                     //foreach (
                     System.Xml.XmlNodeList Nodes;
-                    Nodes = doc.GetElementsByTagName("motronic");
+                    Nodes = doc.GetElementsByTagName(m_tagName);
                     foreach (System.Xml.XmlNode Item in Nodes)
                     {
                         System.Xml.XmlAttributeCollection XMLColl;
@@ -368,9 +354,7 @@ namespace MotronicSuite
                                     if (v > maxversion) maxversion = v;
                                     m_updateavailable = true;
                                     PumpString("Available version: " + myAttr.Value, false, false, new Version(), Apppath + "\\Notes.xml");
-
                                 }
-
                                 else if (v.Major < m_currentversion.Major || (v.Major == m_currentversion.Major && v.Minor < m_currentversion.Minor) || (v.Major == m_currentversion.Major && v.Minor == m_currentversion.Minor && v.Build < m_currentversion.Build))
                                 {
 
@@ -388,10 +372,11 @@ namespace MotronicSuite
                 {
                     PumpString(E.Message, false, false, new Version(), "");
                 }
+                
                 if (m_updateavailable)
                 {
 
-                    //Console.WriteLine("An update is available: " + maxversion.ToString());
+                    //LogHelper.Log("An update is available: " + maxversion.ToString());
                     PumpString("A newer version is available: " + maxversion.ToString(), m_updateavailable, m_version_toohigh, maxversion, Apppath + "\\Notes.xml");
                     m_NewVersion = maxversion;
 
@@ -417,7 +402,7 @@ namespace MotronicSuite
 
         internal string GetReleaseNotes()
         {
-            string URLString = "http://trionic.mobixs.eu/Motronic/Notes.xml";
+            string URLString = m_server + "Notes.xml";
             string XMLResult = GetPageHTML(URLString, 10);
             using (StreamWriter xmlfile = new StreamWriter(Apppath + "\\Notes.xml", false, System.Text.Encoding.ASCII, 2048))
             {
