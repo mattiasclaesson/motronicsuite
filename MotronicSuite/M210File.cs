@@ -576,7 +576,7 @@ namespace MotronicSuite
             sym.Length = 1;
             //sh.Symbol_number = symbolnumber++;
 
-            sym.Flash_start_address = 0xA005;
+            sym.Flash_start_address = 0xA005; //NOTE: this applies only for custom modified binary!
             sym.Cols = 1;
             sym.Rows = 1;
             symbols.Add(sym);
@@ -590,7 +590,7 @@ namespace MotronicSuite
 
                 //Console.WriteLine("xdescr " + xdescr + " " + "ydescr " + ydescr);
 
-                if (xdescr == "Coolant temperature [Degrees celcius]" || ydescr == "Coolant temperature [Degrees celcius]")
+                if (xdescr == "Coolant temperature [Unknown]" || ydescr == "Coolant temperature [Unknown]")
                 {
                     sh.Category = "Temperature compensation";
                 }

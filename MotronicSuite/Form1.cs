@@ -2474,7 +2474,7 @@ namespace MotronicSuite
                     _workingFile.onDecodeProgress += new IECUFile.DecodeProgress(_workingFile_onDecodeProgress);
                     if (!silent)
                     {
-                        frmInfoBox info = new frmInfoBox("M 2.10 support is still highly experimental!");
+                        frmInfoBox info = new frmInfoBox("M 2.10 support is still highly experimental! Some map definitions are hard coded and therefore might work only with some binaries. Note also that currently \"injector constant\" is valid only in custom modified Motronic binary.");
                     }
                     FileTools.Instance.CurrentFiletype = FileType.MOTRONIC210;
                     FileTools.Instance.Currentfile = filename;

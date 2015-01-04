@@ -57,9 +57,9 @@ namespace MotronicTools
                     break;
                 case 0x37: // Coolant temperature
                     m_correctionfactor = 1;
-                    m_correctionoffset = -80;
+                    m_correctionoffset = 0;
                     m_description = "Coolant temperature";
-                    m_units = "Degrees celcius";
+                    m_units = "Unknown";
                     break;
                 case 0x3A:
                     m_correctionfactor = 40;
