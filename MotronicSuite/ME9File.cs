@@ -168,42 +168,14 @@ namespace MotronicSuite
             }
         }
 
-        private void LoadME7File(string filename, out SymbolCollection symbols, out AxisCollection axis)
+        private void LoadME9File(string filename, out SymbolCollection symbols, out AxisCollection axis)
         {
-            // this should detect the 4 different file types for ME7 (ME7.0 512Kb, ME7.0 1024Kb, ME7.0.1 version A and ME7.0.1 version B) 
-            // and parse them with a different algorithm.
-
-
             symbols = new SymbolCollection();
             axis = new AxisCollection();
             SetProgressPercentage("Analyzing structure", 30);
             
             byte[] allBytes = File.ReadAllBytes(filename);
 
-            if (findSequence(allBytes, 0, new byte[7] { 0x4d, 0x45, 0x37, 0x5F, 0x35, 0x30, 0x30 }, new byte[7] { 1, 1, 1, 1, 1, 1, 1 }) > 0)
-            {
-                ParseME701File(filename, out symbols, out axis);
-            }
-            else
-            {
-                ParseME700File(filename, out symbols, out axis);
-            }
-            
-            SetProgressPercentage("Sorting data", 90);
-            // sort the symbol on length, biggest on top
-            symbols.SortColumn = "Length";
-            symbols.SortingOrder = GenericComparer.SortOrder.Descending;
-            symbols.Sort();
-
-           
-
-        }
-
-        private void ParseME701File(string filename, out SymbolCollection symbols, out AxisCollection axis)
-        {
-            symbols = new SymbolCollection();
-            axis = new AxisCollection();
-            byte[] allBytes = File.ReadAllBytes(filename);
             int state = 0;
             // parse the file and look for 0xE6 0xFC ?? ?? 0xF2 0xFD indicators for starters
             for (int t = 0; t < allBytes.Length; t++)
@@ -299,7 +271,7 @@ namespace MotronicSuite
                 }
             }
 
-            
+
 
             int LambdaRequestMapAddress = GetLambdaRequestMap(allBytes);
             if (LambdaRequestMapAddress > 0)
@@ -477,7 +449,7 @@ namespace MotronicSuite
                 symbols.Add(sh);
             }
 
-            
+
             int KFLDHBNAddress = GetKFLDHBNMap(allBytes);
             Console.WriteLine("KFLDHBN map: " + KFLDHBNAddress.ToString("X16"));
             if (KFLDHBNAddress > 0)
@@ -533,7 +505,7 @@ namespace MotronicSuite
                 }
                 else if (sh.Length == 0x70 && sh.X_axis_length == 8 && sh.Y_axis_length == 14)
                 {
-                    if(countx70 == 0) sh.Varname = "Lambda.Lambda delay time [KFLRST]";
+                    if (countx70 == 0) sh.Varname = "Lambda.Lambda delay time [KFLRST]";
                     else if (countx70 == 1) sh.Varname = "Lambda.Lambda delay time 2 [KFLRST2]";
 
                     countx70++;
@@ -554,320 +526,326 @@ namespace MotronicSuite
 
                 }
             }
-        }
-
-        private void ParseME700File(string filename, out SymbolCollection symbols, out AxisCollection axis)
-        {
-            // parse the file and look for 0xE6 0xFC ?? ?? 0xF2 0xFD indicators for starters
-            symbols = new SymbolCollection();
-            axis = new AxisCollection();
-            byte[] allBytes = File.ReadAllBytes(filename);
-            int state = 0;
-            for (int t = 0; t < allBytes.Length; t++)
-            {
-                switch (state)
-                {
-                    case 0:
-                        if (allBytes[t] == 0xE6) state++;
-                        break;
-                    case 1:
-                        if (allBytes[t] == 0xFC) state++;
-                        break;
-                    case 2:
-                        //Console.WriteLine(allBytes[t + 2].ToString("X2") + " " + allBytes[t + 3].ToString("X2") + " " + allBytes[t + 1].ToString("X2") + allBytes[t].ToString("X2"));
-                        if (allBytes[t + 2] == 0xF2 && allBytes[t + 3] == 0xFD)
-                        {
-                            SymbolHelper sh = new SymbolHelper();
-                            sh.IsSixteenbits = true; // allways for ME7
-                            sh.Varname = t.ToString("X8");
-                            int address = Convert.ToInt32(allBytes[t + 1]) * 256;
-                            address += Convert.ToInt32(allBytes[t]);
-                            address += 0x10000;
-
-                            if (address == 0x1196A)
-                            {
-                                Console.WriteLine("Found 1196A");
-                            }
-                            int ylength = (allBytes[address] + Convert.ToInt32(allBytes[address + 1]) * 256);
-                            int xlength = (allBytes[address + 2] + Convert.ToInt32(allBytes[address + 3]) * 256);
-                            sh.Length = ylength * xlength * 2;
-                            if (sh.Length > 0 && sh.Length <= 0x200 && sh.Length != 0x90) // 0x90 length is not a map
-                            {
-                                sh.Y_axis_address = address/*sh.Flash_start_address*/ + 4;
-                                sh.X_axis_address = address/*sh.Flash_start_address*/ + 4 + (2 * ylength);
-
-                                sh.X_axis_length = xlength;
-                                sh.Y_axis_length = ylength * 2;
-                                sh.Flash_start_address = address + 4 + ylength * 2 + xlength * 2;
-                                if (!CollectionContainsAddress(symbols, sh.Flash_start_address))
-                                {
-                                    symbols.Add(sh);
-                                    /*if (sh.Flash_start_address == 0x1196A)
-                                    {
-                                        Console.WriteLine("Found 1196A");
-                                    }*/
-                                }
-                                //Console.WriteLine("Address: " + address.ToString("X8"));
-
-                            }
-
-
-                        }
-                        state = 0;
-                        break;
-                }
-            }
-
-            int IgnitionMapAddress = GetIgnitionMapAddress(allBytes);
-            if (IgnitionMapAddress <= 0) IgnitionMapAddress = GetIgnitionMapAddress521KBFiles(allBytes);
-            if (IgnitionMapAddress > 0)
-            {
-                SymbolHelper sh = new SymbolHelper();
-                sh.IsSixteenbits = false;
-                //sh.UserDescription = "Ignition map";
-                sh.Varname = "Ignition.Ignition map [KFZW]";
-
-                //sh.Description = "Main ignition map";
-                sh.X_axis_length = 12;
-                sh.Y_axis_length = 16;
-                sh.Length = 0xC0;
-                sh.X_axis_address = IgnitionMapAddress;
-                sh.Y_axis_address = IgnitionMapAddress;
-                sh.Flash_start_address = IgnitionMapAddress;
-                symbols.Add(sh);
-                sh = new SymbolHelper();
-                sh.IsSixteenbits = false;
-                //sh.UserDescription = "Secondary ignition map";
-                sh.Varname = "Ignition.Secondary ignition map [KFZW2]";
-                sh.X_axis_length = 12;
-                sh.Y_axis_length = 16;
-                sh.Length = 0xC0;
-                sh.X_axis_address = IgnitionMapAddress + 0xC0;
-                sh.Y_axis_address = IgnitionMapAddress + 0xC0;
-                sh.Flash_start_address = IgnitionMapAddress + 0xC0;
-                symbols.Add(sh);
-            }
-
-            int LambdaRequestMapAddress = GetLambdaRequestMap(allBytes);
-
-            if (LambdaRequestMapAddress > 0)
-            {
-                SymbolHelper sh = new SymbolHelper();
-                sh.IsSixteenbits = false;
-                // sh.UserDescription = "Lambda driver demand map";
-                sh.Varname = "Fuel.Lambda driver demand map [LAMFA]";
-
-                sh.X_axis_length = 6;
-                sh.Y_axis_length = 15;
-                sh.Length = 15 * 6;
-                sh.X_axis_address = LambdaRequestMapAddress + 2;
-                sh.Y_axis_address = LambdaRequestMapAddress + 17;
-                sh.Flash_start_address = LambdaRequestMapAddress + 23 +7;
-                symbols.Add(sh);
-            }
-            else
-            {
-                LambdaRequestMapAddress = GetLambdaRequestMap512KBFiles(allBytes);
-                if (LambdaRequestMapAddress > 0)
-                {
-                    SymbolHelper sh = new SymbolHelper();
-                    sh.IsSixteenbits = false;
-                    // sh.UserDescription = "Lambda driver demand map";
-                    sh.Varname = "Fuel.Lambda driver demand map [LAMFA]";
-                    sh.X_axis_length = 6;
-                    sh.Y_axis_length = 10;
-                    sh.Length = 10 * 6;
-                    sh.X_axis_address = LambdaRequestMapAddress + 2;
-                    sh.Y_axis_address = LambdaRequestMapAddress + 12;
-                    sh.Flash_start_address = LambdaRequestMapAddress +18 + 6;
-
-                    /*sh.X_axis_length = 10;
-                    sh.Y_axis_length = 6;
-                    sh.Length = 10 * 6;
-                    sh.X_axis_address = LambdaRequestMapAddress + 2;
-                    sh.Y_axis_address = LambdaRequestMapAddress + 12;
-                    sh.Flash_start_address = LambdaRequestMapAddress + 18;*/
-                    symbols.Add(sh);
-                }
-            }
-
-            int VEMapAddress = GetVEMap(allBytes);  //KFKHFM
-            if (VEMapAddress > 0)
-            {
-                SymbolHelper sh = new SymbolHelper();
-                sh.IsSixteenbits = false;
-                sh.Varname = "Airmass.Air mass meter correction [KFKHFM]";
-                sh.X_axis_length = 14;
-                sh.Y_axis_length = 14;
-                sh.Length = 14 * 14;
-                sh.X_axis_address = VEMapAddress + 2;
-                sh.Y_axis_address = VEMapAddress + 16;
-                sh.Flash_start_address = VEMapAddress + 30;
-                symbols.Add(sh);
-            }
-
-            int enrichmentMapAddress = GetEnrichmentMap(allBytes); //KFLBTS
-            if (enrichmentMapAddress > 0)
-            {
-                SymbolHelper sh = new SymbolHelper();
-                sh.IsSixteenbits = false;
-                sh.Varname = "Fuel.Enrichment delta map [KFFDLBTS]";
-                sh.X_axis_length = 16;
-                sh.Y_axis_length = 12;
-                sh.Length = 12 * 16;
-                sh.X_axis_address = enrichmentMapAddress;
-                sh.Y_axis_address = enrichmentMapAddress;
-                sh.Flash_start_address = enrichmentMapAddress;
-                symbols.Add(sh);
-
-                sh = new SymbolHelper();
-                sh.IsSixteenbits = false;
-                sh.Varname = "Fuel.Enrichment map [KFLBTS]";
-                sh.X_axis_length = 16;
-                sh.Y_axis_length = 12;
-                sh.Length = 12 * 16;
-                sh.X_axis_address = enrichmentMapAddress + 0xC0;
-                sh.Y_axis_address = enrichmentMapAddress + 0xC0;
-                sh.Flash_start_address = enrichmentMapAddress + 0xC0;
-                symbols.Add(sh);
-
-            }
-            int KFLDIMX_Address = GetKFLDIMXMap(allBytes);
-            if (KFLDIMX_Address > 0)
-            {
-                SymbolHelper sh = new SymbolHelper();
-                sh.IsSixteenbits = true;
-                sh.Varname = "Boost.Boost control map (I limit) [KFLDIMX]";
-                sh.X_axis_length = 8;
-                sh.Y_axis_length = 16 * 2;
-                sh.Length = 8 * 16;
-                if (allBytes.Length == 0x80000)
-                {
-                    // small files have axis
-                    sh.X_axis_address = KFLDIMX_Address + 4;
-                    sh.Y_axis_address = KFLDIMX_Address + 4 + 8 * 2;
-                    sh.Flash_start_address = KFLDIMX_Address + 4 + 8 * 2 + 16 * 2;
-                }
-                else
-                {
-                    sh.X_axis_address = KFLDIMX_Address;
-                    sh.Y_axis_address = KFLDIMX_Address;
-                    sh.Flash_start_address = KFLDIMX_Address;
-                    // symbols.Add(sh);
-                    /*sh = new SymbolHelper();
-                    sh.IsSixteenbits = true;
-                    sh.Varname = "Boost.Map for linearisation boost pressure = f(TV) [KFLDRL]";
-                    sh.X_axis_length = 10;
-                    sh.Y_axis_length = 16 * 2;
-                    sh.Length = 10 * 16;
-                    sh.X_axis_address = LDRXN_Address + 0x100;
-                    sh.Y_axis_address = LDRXN_Address + 0x100;
-                    sh.Flash_start_address = LDRXN_Address + 0x100;*/
-                    // works only for the file we have a2l for
-                }
-
-                symbols.Add(sh);
-            }
-
-            int KFMIOPAddress = GetKFMIOPMap(allBytes);
-            if (KFMIOPAddress > 0)
-            {
-                SymbolHelper sh = new SymbolHelper();
-                sh.IsSixteenbits = true;
-                sh.Varname = "Torque.Optimum engine torque map [KFMIOP]";
-                sh.MapAllowsNegatives = false;
-                sh.X_axis_length = 11;
-                sh.Y_axis_length = 16 * 2;
-                sh.Length = 11 * 16;
-                sh.X_axis_address = KFMIOPAddress;
-                sh.Y_axis_address = KFMIOPAddress;
-                sh.Flash_start_address = KFMIOPAddress;
-                symbols.Add(sh);
-            }
-
-            int LDRXNAddress = GetLDRXNMap(allBytes);
-            if (LDRXNAddress > 0)
-            {
-                SymbolHelper sh = new SymbolHelper();
-                sh.IsSixteenbits = true;
-                sh.Varname = "Boost.Maximum load boost control [LDRXN]";
-                sh.MapAllowsNegatives = false;
-                sh.X_axis_length = 16;
-                sh.Y_axis_length = 1 * 2;
-                sh.Length = 16;
-                sh.X_axis_address = LDRXNAddress;
-                sh.Y_axis_address = LDRXNAddress;
-                sh.Flash_start_address = LDRXNAddress;
-                symbols.Add(sh);
-            }
-            int KFLDHBNAddress = GetKFLDHBNMap(allBytes);
-            if (KFLDHBNAddress > 0)
-            {
-                SymbolHelper sh = new SymbolHelper();
-                sh.IsSixteenbits = false;
-                sh.Varname = "Boost.Boost control limitation compression ratio turbocharger [KFLDHBN]";
-                sh.MapAllowsNegatives = false;
-                sh.X_axis_length = 8;
-                sh.Y_axis_length = 8;
-                sh.Length = 8 * 8;
-                sh.X_axis_address = KFLDHBNAddress;
-                sh.Y_axis_address = KFLDHBNAddress;
-                sh.Flash_start_address = KFLDHBNAddress;
-                symbols.Add(sh);
-            }
-            symbols.SortColumn = "Flash_start_address";
-            symbols.SortingOrder = GenericComparer.SortOrder.Ascending;
+            
+            SetProgressPercentage("Sorting data", 90);
+            // sort the symbol on length, biggest on top
+            symbols.SortColumn = "Length";
+            symbols.SortingOrder = GenericComparer.SortOrder.Descending;
             symbols.Sort();
-            int countx180 = 0;
-            foreach (SymbolHelper sh in symbols)
-            {
-                if (sh.Length == 0x200)
-                {
-                    sh.Varname = "Boost.Target load map [KFMIRL]";
-                }
-                else if (sh.Length == 0x180)
-                {
-                    if (countx180 == 0) sh.Varname = "Throttle.Accelerator pedal map [KFPED]";
-                    else if (countx180 == 1) sh.Varname = "Boost.Target load map [KFMIRL]";
-                    countx180++;
-                }
-                else if (sh.Length == 0x100)
-                {
-                    sh.Varname = "Throttle.Accelerator pedal map AUT reverse [KFPEDR]";
-                }
-                else if (sh.Length == 0xF0)
-                {
-                    sh.Varname = "Torque.Engine drag torque map [KFMDS]";
-                }
-                else if (sh.Length == 0x60)
-                {
-                    sh.Varname = "Cruise.Speed offset for cruise control [KFVOFFS]";
-                }
-                else if (sh.Length == 0xC0 && sh.X_axis_length == 6 && sh.Y_axis_length == 32)
-                {
-                    sh.Varname = "Airmass.Normalized airmass flow via the throttle [KFMSNWDK]";
-                }
-                else if (sh.Length == 0x70 && sh.X_axis_length == 8 && sh.Y_axis_length == 14)
-                {
-                    sh.Varname = "Lambda.Lambda delay time [KFLRST]";
-                }
-                if (sh.Category == "Undocumented" || sh.Category == "")
-                {
-                    if (sh.Varname.Contains("."))
-                    {
-                        try
-                        {
-                            sh.Category = sh.Varname.Substring(0, sh.Varname.IndexOf("."));
-                        }
-                        catch (Exception cE)
-                        {
-                            Console.WriteLine("Failed to assign category to symbol: " + sh.Varname + " err: " + cE.Message);
-                        }
-                    }
-
-                }
-            }
         }
+
+        //private void ParseME700File(string filename, out SymbolCollection symbols, out AxisCollection axis)
+        //{
+        //    // parse the file and look for 0xE6 0xFC ?? ?? 0xF2 0xFD indicators for starters
+        //    symbols = new SymbolCollection();
+        //    axis = new AxisCollection();
+        //    byte[] allBytes = File.ReadAllBytes(filename);
+        //    int state = 0;
+        //    for (int t = 0; t < allBytes.Length; t++)
+        //    {
+        //        switch (state)
+        //        {
+        //            case 0:
+        //                if (allBytes[t] == 0xE6) state++;
+        //                break;
+        //            case 1:
+        //                if (allBytes[t] == 0xFC) state++;
+        //                break;
+        //            case 2:
+        //                //Console.WriteLine(allBytes[t + 2].ToString("X2") + " " + allBytes[t + 3].ToString("X2") + " " + allBytes[t + 1].ToString("X2") + allBytes[t].ToString("X2"));
+        //                if (allBytes[t + 2] == 0xF2 && allBytes[t + 3] == 0xFD)
+        //                {
+        //                    SymbolHelper sh = new SymbolHelper();
+        //                    sh.IsSixteenbits = true; // allways for ME7
+        //                    sh.Varname = t.ToString("X8");
+        //                    int address = Convert.ToInt32(allBytes[t + 1]) * 256;
+        //                    address += Convert.ToInt32(allBytes[t]);
+        //                    address += 0x10000;
+
+        //                    if (address == 0x1196A)
+        //                    {
+        //                        Console.WriteLine("Found 1196A");
+        //                    }
+        //                    int ylength = (allBytes[address] + Convert.ToInt32(allBytes[address + 1]) * 256);
+        //                    int xlength = (allBytes[address + 2] + Convert.ToInt32(allBytes[address + 3]) * 256);
+        //                    sh.Length = ylength * xlength * 2;
+        //                    if (sh.Length > 0 && sh.Length <= 0x200 && sh.Length != 0x90) // 0x90 length is not a map
+        //                    {
+        //                        sh.Y_axis_address = address/*sh.Flash_start_address*/ + 4;
+        //                        sh.X_axis_address = address/*sh.Flash_start_address*/ + 4 + (2 * ylength);
+
+        //                        sh.X_axis_length = xlength;
+        //                        sh.Y_axis_length = ylength * 2;
+        //                        sh.Flash_start_address = address + 4 + ylength * 2 + xlength * 2;
+        //                        if (!CollectionContainsAddress(symbols, sh.Flash_start_address))
+        //                        {
+        //                            symbols.Add(sh);
+        //                            /*if (sh.Flash_start_address == 0x1196A)
+        //                            {
+        //                                Console.WriteLine("Found 1196A");
+        //                            }*/
+        //                        }
+        //                        //Console.WriteLine("Address: " + address.ToString("X8"));
+
+        //                    }
+
+
+        //                }
+        //                state = 0;
+        //                break;
+        //        }
+        //    }
+
+        //    int IgnitionMapAddress = GetIgnitionMapAddress(allBytes);
+        //    if (IgnitionMapAddress <= 0) IgnitionMapAddress = GetIgnitionMapAddress521KBFiles(allBytes);
+        //    if (IgnitionMapAddress > 0)
+        //    {
+        //        SymbolHelper sh = new SymbolHelper();
+        //        sh.IsSixteenbits = false;
+        //        //sh.UserDescription = "Ignition map";
+        //        sh.Varname = "Ignition.Ignition map [KFZW]";
+
+        //        //sh.Description = "Main ignition map";
+        //        sh.X_axis_length = 12;
+        //        sh.Y_axis_length = 16;
+        //        sh.Length = 0xC0;
+        //        sh.X_axis_address = IgnitionMapAddress;
+        //        sh.Y_axis_address = IgnitionMapAddress;
+        //        sh.Flash_start_address = IgnitionMapAddress;
+        //        symbols.Add(sh);
+        //        sh = new SymbolHelper();
+        //        sh.IsSixteenbits = false;
+        //        //sh.UserDescription = "Secondary ignition map";
+        //        sh.Varname = "Ignition.Secondary ignition map [KFZW2]";
+        //        sh.X_axis_length = 12;
+        //        sh.Y_axis_length = 16;
+        //        sh.Length = 0xC0;
+        //        sh.X_axis_address = IgnitionMapAddress + 0xC0;
+        //        sh.Y_axis_address = IgnitionMapAddress + 0xC0;
+        //        sh.Flash_start_address = IgnitionMapAddress + 0xC0;
+        //        symbols.Add(sh);
+        //    }
+
+        //    int LambdaRequestMapAddress = GetLambdaRequestMap(allBytes);
+
+        //    if (LambdaRequestMapAddress > 0)
+        //    {
+        //        SymbolHelper sh = new SymbolHelper();
+        //        sh.IsSixteenbits = false;
+        //        // sh.UserDescription = "Lambda driver demand map";
+        //        sh.Varname = "Fuel.Lambda driver demand map [LAMFA]";
+
+        //        sh.X_axis_length = 6;
+        //        sh.Y_axis_length = 15;
+        //        sh.Length = 15 * 6;
+        //        sh.X_axis_address = LambdaRequestMapAddress + 2;
+        //        sh.Y_axis_address = LambdaRequestMapAddress + 17;
+        //        sh.Flash_start_address = LambdaRequestMapAddress + 23 +7;
+        //        symbols.Add(sh);
+        //    }
+        //    else
+        //    {
+        //        LambdaRequestMapAddress = GetLambdaRequestMap512KBFiles(allBytes);
+        //        if (LambdaRequestMapAddress > 0)
+        //        {
+        //            SymbolHelper sh = new SymbolHelper();
+        //            sh.IsSixteenbits = false;
+        //            // sh.UserDescription = "Lambda driver demand map";
+        //            sh.Varname = "Fuel.Lambda driver demand map [LAMFA]";
+        //            sh.X_axis_length = 6;
+        //            sh.Y_axis_length = 10;
+        //            sh.Length = 10 * 6;
+        //            sh.X_axis_address = LambdaRequestMapAddress + 2;
+        //            sh.Y_axis_address = LambdaRequestMapAddress + 12;
+        //            sh.Flash_start_address = LambdaRequestMapAddress +18 + 6;
+
+        //            /*sh.X_axis_length = 10;
+        //            sh.Y_axis_length = 6;
+        //            sh.Length = 10 * 6;
+        //            sh.X_axis_address = LambdaRequestMapAddress + 2;
+        //            sh.Y_axis_address = LambdaRequestMapAddress + 12;
+        //            sh.Flash_start_address = LambdaRequestMapAddress + 18;*/
+        //            symbols.Add(sh);
+        //        }
+        //    }
+
+        //    int VEMapAddress = GetVEMap(allBytes);  //KFKHFM
+        //    if (VEMapAddress > 0)
+        //    {
+        //        SymbolHelper sh = new SymbolHelper();
+        //        sh.IsSixteenbits = false;
+        //        sh.Varname = "Airmass.Air mass meter correction [KFKHFM]";
+        //        sh.X_axis_length = 14;
+        //        sh.Y_axis_length = 14;
+        //        sh.Length = 14 * 14;
+        //        sh.X_axis_address = VEMapAddress + 2;
+        //        sh.Y_axis_address = VEMapAddress + 16;
+        //        sh.Flash_start_address = VEMapAddress + 30;
+        //        symbols.Add(sh);
+        //    }
+
+        //    int enrichmentMapAddress = GetEnrichmentMap(allBytes); //KFLBTS
+        //    if (enrichmentMapAddress > 0)
+        //    {
+        //        SymbolHelper sh = new SymbolHelper();
+        //        sh.IsSixteenbits = false;
+        //        sh.Varname = "Fuel.Enrichment delta map [KFFDLBTS]";
+        //        sh.X_axis_length = 16;
+        //        sh.Y_axis_length = 12;
+        //        sh.Length = 12 * 16;
+        //        sh.X_axis_address = enrichmentMapAddress;
+        //        sh.Y_axis_address = enrichmentMapAddress;
+        //        sh.Flash_start_address = enrichmentMapAddress;
+        //        symbols.Add(sh);
+
+        //        sh = new SymbolHelper();
+        //        sh.IsSixteenbits = false;
+        //        sh.Varname = "Fuel.Enrichment map [KFLBTS]";
+        //        sh.X_axis_length = 16;
+        //        sh.Y_axis_length = 12;
+        //        sh.Length = 12 * 16;
+        //        sh.X_axis_address = enrichmentMapAddress + 0xC0;
+        //        sh.Y_axis_address = enrichmentMapAddress + 0xC0;
+        //        sh.Flash_start_address = enrichmentMapAddress + 0xC0;
+        //        symbols.Add(sh);
+
+        //    }
+        //    int KFLDIMX_Address = GetKFLDIMXMap(allBytes);
+        //    if (KFLDIMX_Address > 0)
+        //    {
+        //        SymbolHelper sh = new SymbolHelper();
+        //        sh.IsSixteenbits = true;
+        //        sh.Varname = "Boost.Boost control map (I limit) [KFLDIMX]";
+        //        sh.X_axis_length = 8;
+        //        sh.Y_axis_length = 16 * 2;
+        //        sh.Length = 8 * 16;
+        //        if (allBytes.Length == 0x80000)
+        //        {
+        //            // small files have axis
+        //            sh.X_axis_address = KFLDIMX_Address + 4;
+        //            sh.Y_axis_address = KFLDIMX_Address + 4 + 8 * 2;
+        //            sh.Flash_start_address = KFLDIMX_Address + 4 + 8 * 2 + 16 * 2;
+        //        }
+        //        else
+        //        {
+        //            sh.X_axis_address = KFLDIMX_Address;
+        //            sh.Y_axis_address = KFLDIMX_Address;
+        //            sh.Flash_start_address = KFLDIMX_Address;
+        //            // symbols.Add(sh);
+        //            /*sh = new SymbolHelper();
+        //            sh.IsSixteenbits = true;
+        //            sh.Varname = "Boost.Map for linearisation boost pressure = f(TV) [KFLDRL]";
+        //            sh.X_axis_length = 10;
+        //            sh.Y_axis_length = 16 * 2;
+        //            sh.Length = 10 * 16;
+        //            sh.X_axis_address = LDRXN_Address + 0x100;
+        //            sh.Y_axis_address = LDRXN_Address + 0x100;
+        //            sh.Flash_start_address = LDRXN_Address + 0x100;*/
+        //            // works only for the file we have a2l for
+        //        }
+
+        //        symbols.Add(sh);
+        //    }
+
+        //    int KFMIOPAddress = GetKFMIOPMap(allBytes);
+        //    if (KFMIOPAddress > 0)
+        //    {
+        //        SymbolHelper sh = new SymbolHelper();
+        //        sh.IsSixteenbits = true;
+        //        sh.Varname = "Torque.Optimum engine torque map [KFMIOP]";
+        //        sh.MapAllowsNegatives = false;
+        //        sh.X_axis_length = 11;
+        //        sh.Y_axis_length = 16 * 2;
+        //        sh.Length = 11 * 16;
+        //        sh.X_axis_address = KFMIOPAddress;
+        //        sh.Y_axis_address = KFMIOPAddress;
+        //        sh.Flash_start_address = KFMIOPAddress;
+        //        symbols.Add(sh);
+        //    }
+
+        //    int LDRXNAddress = GetLDRXNMap(allBytes);
+        //    if (LDRXNAddress > 0)
+        //    {
+        //        SymbolHelper sh = new SymbolHelper();
+        //        sh.IsSixteenbits = true;
+        //        sh.Varname = "Boost.Maximum load boost control [LDRXN]";
+        //        sh.MapAllowsNegatives = false;
+        //        sh.X_axis_length = 16;
+        //        sh.Y_axis_length = 1 * 2;
+        //        sh.Length = 16;
+        //        sh.X_axis_address = LDRXNAddress;
+        //        sh.Y_axis_address = LDRXNAddress;
+        //        sh.Flash_start_address = LDRXNAddress;
+        //        symbols.Add(sh);
+        //    }
+        //    int KFLDHBNAddress = GetKFLDHBNMap(allBytes);
+        //    if (KFLDHBNAddress > 0)
+        //    {
+        //        SymbolHelper sh = new SymbolHelper();
+        //        sh.IsSixteenbits = false;
+        //        sh.Varname = "Boost.Boost control limitation compression ratio turbocharger [KFLDHBN]";
+        //        sh.MapAllowsNegatives = false;
+        //        sh.X_axis_length = 8;
+        //        sh.Y_axis_length = 8;
+        //        sh.Length = 8 * 8;
+        //        sh.X_axis_address = KFLDHBNAddress;
+        //        sh.Y_axis_address = KFLDHBNAddress;
+        //        sh.Flash_start_address = KFLDHBNAddress;
+        //        symbols.Add(sh);
+        //    }
+        //    symbols.SortColumn = "Flash_start_address";
+        //    symbols.SortingOrder = GenericComparer.SortOrder.Ascending;
+        //    symbols.Sort();
+        //    int countx180 = 0;
+        //    foreach (SymbolHelper sh in symbols)
+        //    {
+        //        if (sh.Length == 0x200)
+        //        {
+        //            sh.Varname = "Boost.Target load map [KFMIRL]";
+        //        }
+        //        else if (sh.Length == 0x180)
+        //        {
+        //            if (countx180 == 0) sh.Varname = "Throttle.Accelerator pedal map [KFPED]";
+        //            else if (countx180 == 1) sh.Varname = "Boost.Target load map [KFMIRL]";
+        //            countx180++;
+        //        }
+        //        else if (sh.Length == 0x100)
+        //        {
+        //            sh.Varname = "Throttle.Accelerator pedal map AUT reverse [KFPEDR]";
+        //        }
+        //        else if (sh.Length == 0xF0)
+        //        {
+        //            sh.Varname = "Torque.Engine drag torque map [KFMDS]";
+        //        }
+        //        else if (sh.Length == 0x60)
+        //        {
+        //            sh.Varname = "Cruise.Speed offset for cruise control [KFVOFFS]";
+        //        }
+        //        else if (sh.Length == 0xC0 && sh.X_axis_length == 6 && sh.Y_axis_length == 32)
+        //        {
+        //            sh.Varname = "Airmass.Normalized airmass flow via the throttle [KFMSNWDK]";
+        //        }
+        //        else if (sh.Length == 0x70 && sh.X_axis_length == 8 && sh.Y_axis_length == 14)
+        //        {
+        //            sh.Varname = "Lambda.Lambda delay time [KFLRST]";
+        //        }
+        //        if (sh.Category == "Undocumented" || sh.Category == "")
+        //        {
+        //            if (sh.Varname.Contains("."))
+        //            {
+        //                try
+        //                {
+        //                    sh.Category = sh.Varname.Substring(0, sh.Varname.IndexOf("."));
+        //                }
+        //                catch (Exception cE)
+        //                {
+        //                    Console.WriteLine("Failed to assign category to symbol: " + sh.Varname + " err: " + cE.Message);
+        //                }
+        //            }
+
+        //        }
+        //    }
+        //}
 
         private int GetKFLDHBNMap(byte[] allBytes)
         {
@@ -986,19 +964,19 @@ namespace MotronicSuite
 
         private int GetLambdaRequestMap(byte[] allBytes)
         {
-            byte[] sequence = new byte[6] {0x0F, 0x06, 0xFF, 0xFF, 0x32, 0x3F};
-            byte[] seq_mask = new byte[6] {1, 1, 0, 0, 1, 1};
+            byte[] sequence = new byte[6] {0x0F, 0x06, 0x19, 0x23, 0x2D, 0x37};
+            byte[] seq_mask = new byte[6] { 1, 1, 1, 1, 1, 1 }; //1, 1, 0, 0, 1, 1
             int offSetInFile = findSequence(allBytes, 0, sequence, seq_mask);
-            return offSetInFile;
+            return offSetInFile;//0x1D19FC - 30
         }
 
-        private int GetLambdaRequestMap512KBFiles(byte[] allBytes)
-        {
-            byte[] sequence = new byte[5] { 0x0A, 0x06, 0xFF, 0x32, 0x3F };
-            byte[] seq_mask = new byte[5] { 1, 1, 0, 1, 1 };
-            int offSetInFile = findSequence(allBytes, 0, sequence, seq_mask);
-            return offSetInFile;
-        }
+        //private int GetLambdaRequestMap512KBFiles(byte[] allBytes)
+        //{
+        //    byte[] sequence = new byte[5] { 0x0A, 0x06, 0xFF, 0x32, 0x3F };
+        //    byte[] seq_mask = new byte[5] { 1, 1, 0, 1, 1 };
+        //    int offSetInFile = findSequence(allBytes, 0, sequence, seq_mask);
+        //    return offSetInFile;
+        //}
 
         private int GetIgnitionMapAddress(byte[] allBytes)
         {
@@ -1206,7 +1184,7 @@ namespace MotronicSuite
             m_fileInfo = new FileInformation();
             SymbolCollection symbols = new SymbolCollection();
             AxisCollection axis = new AxisCollection();
-            LoadME7File(m_currentFile, out symbols, out axis);
+            LoadME9File(m_currentFile, out symbols, out axis);
             m_symbols = symbols;
             m_axis = axis;
             m_fileInfo.Symbols = symbols;
