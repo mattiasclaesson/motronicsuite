@@ -108,7 +108,6 @@ namespace MotronicSuite
 {
     #region delegate functions 
 
-    public delegate void DelegateShowChangeLog(Version v);
     public delegate void DelegateStartReleaseNotePanel(string filename, string version);
     public delegate void DelegateUpdateProgress(string information, int percentage);
     public delegate void DelegateUpdateECUInfo(string ecuinfo);
@@ -126,7 +125,6 @@ namespace MotronicSuite
         IECUFile _workingFile = new M43File(); // default use M4.3
         AxisCollection m_tempaxis = new AxisCollection();
         msiupdater m_msiUpdater;
-        public DelegateShowChangeLog m_DelegateShowChangeLog;
         public DelegateUpdateProgress m_DelegateUpdateProgress;
         public DelegateUpdateECUInfo m_DelegateUpdateECUInfo;
         public DelegateStartReleaseNotePanel m_DelegateStartReleaseNotePanel;
@@ -149,7 +147,6 @@ namespace MotronicSuite
             ribbonControl1.SelectedPage = ribbonPage1;
             try
             {
-                m_DelegateShowChangeLog = new DelegateShowChangeLog(this.ShowChangeLog);
                 m_DelegateStartReleaseNotePanel = new DelegateStartReleaseNotePanel(this.StartReleaseNotesViewer);
                 m_DelegateUpdateProgress = new DelegateUpdateProgress(this.UpdateProgress);
                 m_DelegateUpdateECUInfo = new DelegateUpdateECUInfo(this.UpdateECUInfo);
@@ -4933,66 +4930,11 @@ Axis Column: XDFTABLE_Id                 * */
 
         }
 
-        public void GetRSSFeeds(Version newversion)
-        {
-            try
-            {
-                RSS2HTMLScoutLib.RSS2HTMLScout RSS2HTML = new RSS2HTMLScoutLib.RSS2HTMLScout();
-                //RSS2HTML.ForceRefresh = true;
-                RSS2HTML.ItemsPerFeed = 10; // limit 5 latest items per feed
-                RSS2HTML.MainHeader = "<html><head><title>Motronic Suite changelog</title><!-- CSS source code will be inserted here -->{CSS}<!-- HTML page encoding. please change if needed --><!-- <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"> --></head><body>";
-                //RSS2HTML.ChannelHeader = "<div class=\"ChannelHeader\"><table width=\"100%\" border=\"0\"><tr><td valign=\"middle\" align=\"left\"><a href=\"{LINK}\">{IMAGE}</a></td>      <td width=\"99%\" vAlign=middle align=middle><br><h3>{TITLE}</h3></td></tr></table></div>";
-                RSS2HTML.ChannelHeader = "<div class=\"ChannelHeader\"><table width=\"100%\" border=\"0\"><tr><td valign=\"middle\" align=\"left\"><a href=\"{LINK}\"> {IMAGE}</a></td>      <td width=\"99%\" vAlign=middle align=middle><br><h2>{TITLE}</h2></td></tr></table>{DESCRIPTION}</div>";
-                RSS2HTML.EnclosureTemplate = "<a href=\"{LINK}\">Image: {TITLE} ({LENGTH})</a>";
-                RSS2HTML.ErrorMessageTemplate = "<p>Following feeds can not be displayed:<br>{FAILEDFEEDS}<br></p>";
-                RSS2HTML.ItemTemplate = "<div class=\"ItemHeader\"><a href=\"{LINK}\">{TITLE}</a></div><div class=\"ItemDescription\">{DESCRIPTION}</div><div class=\"ItemFooter\">{AUTHOR} {DATE} {TIME} <a href=\"{COMMENTS}\">{COMMENTS} {ENCLOSURE}</a></div>";
-                RSS2HTML.NewItemTemplate = "<div style=\"font-style: italic; background-color: #ead2d9\" class=\"NewItemHeader\"><a href=\"{LINK}\">{TITLE}</a></div><div class=\"NewItemDescription\">{DESCRIPTION}</div><div class=\"NewItemFooter\">{AUTHOR} {DATE} {TIME} <a href=\"{COMMENTS}\">{COMMENTS} {ENCLOSURE}</a></div>";
-                RSS2HTML.MainFooter = "</body></html>";
-                RSS2HTML.AddFeed("http://trionic.mobixs.eu/motronic/" + newversion.ToString() + "/Notes.xml", 180); // ' update every 180 minutes (3 hours)
-                RSS2HTML.Execute();
-                RSS2HTML.SaveOutputToFile(System.Windows.Forms.Application.UserAppDataPath + "\\Motronic.html");
-            }
-            catch (Exception E)
-            {
-                Console.WriteLine("Error getting RSS feeds: " + E.Message);
-            }
-
-        }
-
         private void SetStatusText(string text)
         {
             barStaticItem1.Caption = text;
             System.Windows.Forms.Application.DoEvents();
             //Console.WriteLine(text);
-        }
-
-        private void ShowChangeLog(Version newversion)
-        {
-            try
-            {
-                if (File.Exists(System.Windows.Forms.Application.UserAppDataPath + "\\Motronic.html"))
-                {
-                    File.Delete(System.Windows.Forms.Application.UserAppDataPath + "\\Motronic.html");
-                }
-                GetRSSFeeds(newversion);
-                if (File.Exists(System.Windows.Forms.Application.UserAppDataPath + "\\Motronic.html"))
-                {
-                    DevExpress.XtraBars.Docking.DockPanel panel = dockManager1.AddPanel(DevExpress.XtraBars.Docking.DockingStyle.Right);
-                    panel.Text = "Change history";
-                    WebBrowser wb = new WebBrowser();
-                    panel.Width = 600;
-                    wb.Dock = DockStyle.Fill;
-                    panel.Controls.Add(wb);
-                    panel.Show();
-                    //Console.WriteLine("WebPanel Shown");
-                    wb.Navigate(System.Windows.Forms.Application.UserAppDataPath + "\\Motronic.html");
-                }
-            }
-            catch (Exception E)
-            {
-                Console.WriteLine(E.Message);
-            }
-
         }
 
         void m_msiUpdater_onDataPump(msiupdater.MSIUpdaterEventArgs e)
