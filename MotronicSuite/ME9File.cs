@@ -1192,7 +1192,7 @@ namespace MotronicSuite
             return m_fileInfo;
         }
 
-        private void DecodeME7FileInformation(string filename, out string hardwareID, out string softwareID, out string partnumber, out string damosinfo)
+        private void DecodeME9FileInformation(string filename, out string hardwareID, out string softwareID, out string partnumber, out string damosinfo)
         {
             hardwareID = string.Empty;
             softwareID = string.Empty;
@@ -1202,31 +1202,31 @@ namespace MotronicSuite
             try
             {
                 byte[] filebytes = File.ReadAllBytes(filename);
-                // search file for indicator ZSMFC
-                for (int i = 0; i < filebytes.Length; i++)
-                {
-                    if (i < filebytes.Length - 8)
-                    {
-                        if (filebytes[i] == 'Z' && filebytes[i + 1] == 'S' && filebytes[i + 2] == 'M' && filebytes[i + 3] == 'F' && filebytes[i + 4] == 'C')
-                        {
-                            // found.. now parse info 40 bytes further
-                            for (int j = 0; j < 10; j++) hardwareID += Convert.ToChar(filebytes[i + 40 + j]);
-                            for (int j = 0; j < 10; j++) softwareID += Convert.ToChar(filebytes[i + 50 + j]);
-                            for (int j = 0; j < 7; j++) partnumber += Convert.ToChar(filebytes[i + 60 + j]);
-                            Console.WriteLine("hwid: " + hardwareID);
-                            Console.WriteLine("swid: " + softwareID);
-                            Console.WriteLine("part: " + partnumber);
-                            break;
-                        }
-                    }
-                }
+                //// search file for indicator ZSMFC
+                //for (int i = 0; i < filebytes.Length; i++)
+                //{
+                //    if (i < filebytes.Length - 8)
+                //    {
+                //        if (filebytes[i] == 'Z' && filebytes[i + 1] == 'S' && filebytes[i + 2] == 'M' && filebytes[i + 3] == 'F' && filebytes[i + 4] == 'C')
+                //        {
+                //            // found.. now parse info 40 bytes further
+                //            for (int j = 0; j < 10; j++) hardwareID += Convert.ToChar(filebytes[i + 40 + j]);
+                //            for (int j = 0; j < 10; j++) softwareID += Convert.ToChar(filebytes[i + 50 + j]);
+                //            for (int j = 0; j < 7; j++) partnumber += Convert.ToChar(filebytes[i + 60 + j]);
+                //            Console.WriteLine("hwid: " + hardwareID);
+                //            Console.WriteLine("swid: " + softwareID);
+                //            Console.WriteLine("part: " + partnumber);
+                //            break;
+                //        }
+                //    }
+                //}
 
-                // find damos info M4.3 indicator
+                // find damos info indicator
                 for (int i = 0; i < filebytes.Length; i++)
                 {
                     if (i < filebytes.Length - 8)
                     {
-                        if (filebytes[i] == 'M' && filebytes[i + 1] == '4' && filebytes[i + 2] == '.' && filebytes[i + 3] == '3')
+                        if (filebytes[i] == 'M' && filebytes[i + 1] == 'E' && filebytes[i + 2] == '9' && filebytes[i + 3] == '.' && filebytes[i + 4] == '6')
                         {
                             for (int j = 0; j < 44; j++) damosinfo += Convert.ToChar(filebytes[i - 5 + j]);
                             break;
@@ -1237,7 +1237,7 @@ namespace MotronicSuite
             }
             catch (Exception E)
             {
-                Console.WriteLine("DecodeME7FileInformation: " + E.Message);
+                Console.WriteLine("DecodeME9FileInformation: " + E.Message);
             }
 
         }
@@ -1249,7 +1249,7 @@ namespace MotronicSuite
             string partnumber = string.Empty;
             string damos = string.Empty;
 
-            DecodeME7FileInformation(m_currentFile, out hwid, out swid, out partnumber, out damos);
+            DecodeME9FileInformation(m_currentFile, out hwid, out swid, out partnumber, out damos);
             return partnumber;
         }
 
@@ -1260,7 +1260,7 @@ namespace MotronicSuite
             string partnumber = string.Empty;
             string damos = string.Empty;
 
-            DecodeME7FileInformation(m_currentFile, out hwid, out swid, out partnumber, out damos);
+            DecodeME9FileInformation(m_currentFile, out hwid, out swid, out partnumber, out damos);
             return hwid;
         }
 
@@ -1270,7 +1270,7 @@ namespace MotronicSuite
             string swid = string.Empty;
             string partnumber = string.Empty;
             string damos = string.Empty;
-            DecodeME7FileInformation(m_currentFile, out hwid, out swid, out partnumber, out damos);
+            DecodeME9FileInformation(m_currentFile, out hwid, out swid, out partnumber, out damos);
             return damos;
         }
 
@@ -1280,7 +1280,7 @@ namespace MotronicSuite
             string swid = string.Empty;
             string partnumber = string.Empty;
             string damos = string.Empty;
-            DecodeME7FileInformation(m_currentFile, out hwid, out swid, out partnumber, out damos);
+            DecodeME9FileInformation(m_currentFile, out hwid, out swid, out partnumber, out damos);
             return swid;
         }
 

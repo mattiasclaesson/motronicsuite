@@ -3881,6 +3881,23 @@ Axis Column: XDFTABLE_Id                 * */
                     info.HardwareID = _workingFile.GetPartnumber();
                     info.DamosInfo = _workingFile.GetDamosInfo();
                 }
+                else if (FileTools.Instance.CurrentFiletype == FileType.MOTRONICME96)
+                {
+                    string checksum = "Ok";
+                    if (!_workingFile.ValidateChecksum()) checksum = "Failed";
+                    info.Checksum = checksum;
+                    string hardwareID = string.Empty;
+                    string softwareID = string.Empty;
+                    string partnumber = string.Empty;
+                    string damosinfo = string.Empty;
+                    info.PartNumber = _workingFile.GetHardwareID();
+                    info.SoftwareID = _workingFile.GetSoftwareVersion();
+                    info.HardwareID = _workingFile.GetPartnumber();
+                    info.DamosInfo = _workingFile.GetDamosInfo();
+                    //info.SpeedLimit = FileTools.Instance.Speedlimit;
+                    //info.RpmLimit = FileTools.Instance.Rpmlimit;
+
+                }
                 else if (FileTools.Instance.CurrentFiletype == FileType.LH242)
                 {
                     // LH242 calculation
