@@ -1221,6 +1221,41 @@ namespace MotronicSuite
                 //    }
                 //}
 
+                for (int i = 0x6140; i < 0x6140+10; i++)
+                {
+                    if (!filebytes[i].Equals(0xFF))
+                    {
+                        hardwareID += Convert.ToChar(filebytes[i]);
+                    }
+                    else
+                    {
+                        hardwareID = "Only calibration detected";
+                        break;
+                    }
+                }
+
+                for (int i = 0x1C2000; i < filebytes.Length; i++)
+                {
+                    if (filebytes[i] == '@')
+                    {
+                        for (int j = 0; j < 8; j++) softwareID += Convert.ToChar(filebytes[1 + i + j]);
+                        break;
+                    }
+                }
+
+                for (int i = 0x40005; i < 0x40005 + 8; i++)
+                {
+                    if (!filebytes[i].Equals(0xFF))
+                    {
+                        partnumber += Convert.ToChar(filebytes[i]);
+                    }
+                    else
+                    {
+                        partnumber = "Only calibration detected";
+                        break;
+                    }
+                }
+
                 // find damos info indicator
                 for (int i = 0; i < filebytes.Length; i++)
                 {

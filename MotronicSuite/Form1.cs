@@ -3883,16 +3883,17 @@ Axis Column: XDFTABLE_Id                 * */
                 }
                 else if (FileTools.Instance.CurrentFiletype == FileType.MOTRONICME96)
                 {
-                    string checksum = "Ok";
-                    if (!_workingFile.ValidateChecksum()) checksum = "Failed";
+                    //string checksum = "Ok";
+                    //if (!_workingFile.ValidateChecksum()) checksum = "Failed";
+                    string checksum = "Unknown";
                     info.Checksum = checksum;
                     string hardwareID = string.Empty;
                     string softwareID = string.Empty;
                     string partnumber = string.Empty;
                     string damosinfo = string.Empty;
-                    info.PartNumber = _workingFile.GetHardwareID();
+                    info.PartNumber = _workingFile.GetPartnumber();
                     info.SoftwareID = _workingFile.GetSoftwareVersion();
-                    info.HardwareID = _workingFile.GetPartnumber();
+                    info.HardwareID = _workingFile.GetHardwareID();
                     info.DamosInfo = _workingFile.GetDamosInfo();
                     //info.SpeedLimit = FileTools.Instance.Speedlimit;
                     //info.RpmLimit = FileTools.Instance.Rpmlimit;
