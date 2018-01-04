@@ -1,4 +1,4 @@
-set MotronicSuite.version=1.2.3.0
+set MotronicSuite.version=1.2.4.0
 devenv Motronic.sln /Rebuild Release /project SetupSuite
 
 mkdir C:\users\mattias\Delivery\Motronic\%MotronicSuite.version%
