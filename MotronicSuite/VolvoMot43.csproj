@@ -698,16 +698,6 @@
     <EmbeddedResource Include="ZoomOut32.cur" />
   </ItemGroup>
   <ItemGroup>
-    <COMReference Include="RSS2HTMLScoutLib">
-      <Guid>{26A4EA26-4358-4255-A8F9-08E12426E9C1}</Guid>
-      <VersionMajor>1</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>False</Isolated>
-    </COMReference>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\AquaGauge\AquaGauge.csproj">
       <Project>{0E5542E0-FC5D-4F67-950D-9F28C5D1225A}</Project>
       <Name>AquaGauge</Name>
