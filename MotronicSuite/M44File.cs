@@ -750,7 +750,7 @@ namespace MotronicSuite
             int axisaddress = 0;
             readstate = 0;
             axis = new AxisCollection();
-            FileStream fs = new FileStream(filename, FileMode.Open);
+            FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read);
             fs.Position = 0;
             using (BinaryReader br = new BinaryReader(fs))
             {
@@ -931,7 +931,7 @@ namespace MotronicSuite
             int axisaddress = 0;
             readstate = 0;
             axis = new AxisCollection();
-            FileStream fs = new FileStream(filename, FileMode.Open);
+            FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read);
             fs.Position = 0;
             using (BinaryReader br = new BinaryReader(fs, Encoding.ASCII))
             {
@@ -1081,7 +1081,7 @@ namespace MotronicSuite
             int axisaddress = 0;
             readstate = 0;
             axis = new AxisCollection();
-            FileStream fs = new FileStream(filename, FileMode.Open);
+            FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read);
             fs.Position = 0x13100;
             using (BinaryReader br = new BinaryReader(fs))
             {
@@ -1125,7 +1125,7 @@ namespace MotronicSuite
             int axisaddress = 0;
             readstate = 0;
             axis = new AxisCollection();
-            FileStream fs = new FileStream(filename, FileMode.Open);
+            FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read);
             fs.Position = 0;
             using (BinaryReader br = new BinaryReader(fs))
             {
@@ -1555,7 +1555,7 @@ namespace MotronicSuite
         private bool FillAxisInformationM44(string filename, AxisHelper ah)
         {
             bool retval = false;
-            FileStream fs = new FileStream(filename, FileMode.Open);
+            FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read);
             fs.Position = ah.Addressinfile;
             ah.IsMotronic44 = true;
             using (BinaryReader br = new BinaryReader(fs))
@@ -1734,7 +1734,7 @@ namespace MotronicSuite
             M44CRC retval = new M44CRC();
             if (FileTools.Instance.CurrentFiletype == FileType.MOTRONIC44)
             {
-                FileStream fs = new FileStream(filename, FileMode.Open);
+                FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read);
                 fs.Position = 0;
                 retval.Volvocrc1 = 0;
                 retval.Volvocrc2 = 0;

@@ -369,7 +369,7 @@ namespace MotronicSuite
             int readstate = 0;
             int lookuptablestartaddress = 0x00;
             readstate = 0;
-            FileStream fs = new FileStream(filename, FileMode.Open);
+            FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read);
             fs.Position = 0;
             using (BinaryReader br = new BinaryReader(fs))
             {

@@ -124,7 +124,7 @@ namespace MotronicSuite
         private bool FillAxisInformation(string filename, AxisHelper ah)
         {
             bool retval = false;
-            FileStream fs = new FileStream(filename, FileMode.Open);
+            FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read);
             fs.Position = ah.Addressinfile;
             using (BinaryReader br = new BinaryReader(fs))
             {
@@ -1039,7 +1039,7 @@ namespace MotronicSuite
             readstate = 0;
             int indexInFile = 0;
             if (FileTools.Instance.Currentfile == "") return 0;
-            FileStream fs = new FileStream(FileTools.Instance.Currentfile, FileMode.Open);
+            FileStream fs = new FileStream(FileTools.Instance.Currentfile, FileMode.Open, FileAccess.Read);
 
             using (BinaryReader br = new BinaryReader(fs))
             {
@@ -1116,7 +1116,7 @@ namespace MotronicSuite
             int indexInFile = 0;
             if (FileTools.Instance.Currentfile == "") return 0;
 
-            FileStream fs = new FileStream(FileTools.Instance.Currentfile, FileMode.Open);
+            FileStream fs = new FileStream(FileTools.Instance.Currentfile, FileMode.Open, FileAccess.Read);
 
             using (BinaryReader br = new BinaryReader(fs))
             {
@@ -1547,7 +1547,7 @@ namespace MotronicSuite
 
         private uint CalculateM43CRC(string filename)
         {
-            FileStream fs = new FileStream(filename, FileMode.Open);
+            FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read);
             fs.Position = 0;
             uint volvocrc1 = 0;
             using (BinaryReader br = new BinaryReader(fs))
