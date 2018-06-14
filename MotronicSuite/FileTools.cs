@@ -149,7 +149,7 @@ namespace MotronicSuite
             {
                 retval.SetValue((int)br1.ReadByte(), i);
             }
-            if (m_currentFiletype == FileType.MOTRONICME7)
+            if (m_currentFiletype == FileType.MOTRONICME7 || m_currentFiletype == FileType.MOTRONICME96)
             {
                 // little endian, reverse bytes
                 retval = reverseEndian(retval);
@@ -174,10 +174,13 @@ namespace MotronicSuite
                 retval.SetValue(br1.ReadByte(), i);
             }
 
-            if (m_currentFiletype == FileType.MOTRONICME7 && isSixteenBit)
+            if (isSixteenBit)
             {
-                // little endian, reverse bytes
-                retval = reverseEndian(retval);
+                if (m_currentFiletype == FileType.MOTRONICME7 || m_currentFiletype == FileType.MOTRONICME96)
+                {
+                    // little endian, reverse bytes
+                    retval = reverseEndian(retval);
+                }
             }
 
             fsi1.Flush();
@@ -238,7 +241,7 @@ namespace MotronicSuite
         public void savedatatobinary(int address, int length, byte[] data, string filename, bool DoTransActionEntry)
         {
             FileInfo fi = new FileInfo(filename);
-            if (m_currentFiletype == FileType.MOTRONICME7)
+            if (m_currentFiletype == FileType.MOTRONICME7 || m_currentFiletype == FileType.MOTRONICME96)
             {
                 // little endian, reverse bytes
                 data = reverseEndian(data);
@@ -281,7 +284,7 @@ namespace MotronicSuite
         public void savedatatobinary(int address, int length, byte[] data, string filename, bool DoTransActionEntry, string note)
         {
             FileInfo fi = new FileInfo(filename);
-            if (m_currentFiletype == FileType.MOTRONICME7)
+            if (m_currentFiletype == FileType.MOTRONICME7 || m_currentFiletype == FileType.MOTRONICME96)
             {
                 // little endian, reverse bytes
                 data = reverseEndian(data);
@@ -332,7 +335,7 @@ namespace MotronicSuite
 
         public void savedatatobinary(int address, int length, byte[] data, string filename)
         {
-            if (m_currentFiletype == FileType.MOTRONICME7)
+            if (m_currentFiletype == FileType.MOTRONICME7 || m_currentFiletype == FileType.MOTRONICME96)
             {
                 // little endian, reverse bytes
                 data = reverseEndian(data);

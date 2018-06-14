@@ -283,9 +283,9 @@ namespace MotronicSuite
 
                 sh.X_axis_length = 6;
                 sh.Y_axis_length = 15;
-                sh.Length = 15 * 6;
-                sh.X_axis_address = LambdaRequestMapAddress + 2;
-                sh.Y_axis_address = LambdaRequestMapAddress + 17;
+                sh.Length = 6 * 15;
+                sh.X_axis_address = LambdaRequestMapAddress + 2 + 15;
+                sh.Y_axis_address = LambdaRequestMapAddress + 2;
                 sh.Flash_start_address = LambdaRequestMapAddress + 23 + 7;
                 symbols.Add(sh);
             }

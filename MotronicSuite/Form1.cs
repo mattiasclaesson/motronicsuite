@@ -766,6 +766,10 @@ namespace MotronicSuite
                         {
                             ahx.IsM210 = true;
                         }
+                        else if (FileTools.Instance.CurrentFiletype == FileType.MOTRONICME96)
+                        {
+                            ahx.IsME96 = true;
+                        }
 
                         ahx.CalculateRealValues();
                         xvals = ahx.Values; // <GS-01022011>
@@ -783,6 +787,10 @@ namespace MotronicSuite
                         else if (FileTools.Instance.CurrentFiletype == FileType.MOTRONIC210)
                         {
                             ahy.IsM210 = true;
+                        }
+                        else if (FileTools.Instance.CurrentFiletype == FileType.MOTRONICME96)
+                        {
+                            ahy.IsME96 = true;
                         }
 
                         ahy.CalculateRealValues();

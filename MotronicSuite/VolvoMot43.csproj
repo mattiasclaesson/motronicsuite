@@ -78,10 +78,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\AquaGauge.dll</HintPath>
     </Reference>
-    <Reference Include="Be.Windows.Forms.HexBox, Version=1.2.0.14173, Culture=neutral, PublicKeyToken=e0e5adf0ebc99863">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Be.Windows.Forms.HexBox.dll</HintPath>
-    </Reference>
     <Reference Include="DevExpress.BonusSkins.v11.2, Version=11.2.7.0, Culture=neutral, PublicKeyToken=95fc6c5621878f0a, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
@@ -126,10 +122,6 @@
     <Reference Include="MotronicCommunication, Version=1.2.2.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\MotronicCommunication\bin\Debug\MotronicCommunication.dll</HintPath>
-    </Reference>
-    <Reference Include="MotronicTools, Version=1.2.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\MotronicTools\bin\Debug\MotronicTools.dll</HintPath>
     </Reference>
     <Reference Include="Be.Windows.Forms.HexBox, Version=1.2.0.14173, Culture=neutral, PublicKeyToken=e0e5adf0ebc99863">
       <SpecificVersion>False</SpecificVersion>
@@ -709,6 +701,10 @@
     <ProjectReference Include="..\MotronicCommunication\MotronicCommunication.csproj">
       <Project>{F6CFB52C-BD21-4B9C-AFED-850294C83A99}</Project>
       <Name>MotronicCommunication</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MotronicTools\MotronicTools.csproj">
+      <Project>{0CD373AD-187B-4734-A46F-F85DA064643F}</Project>
+      <Name>MotronicTools</Name>
     </ProjectReference>
     <ProjectReference Include="..\MotronicTools\MotronicTools.csproj">
       <Project>{0CD373AD-187B-4734-A46F-F85DA064643F}</Project>
