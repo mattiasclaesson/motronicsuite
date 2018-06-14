@@ -413,7 +413,7 @@ namespace MotronicSuite
 
 
 
-                            dockPanel.DockTo(dockManager1, DevExpress.XtraBars.Docking.DockingStyle.Right, 0);
+                            dockPanel.DockTo(DevExpress.XtraBars.Docking.DockingStyle.Right, 0);
                             if (tabdet.X_axisvalues.Length > 0)
                             {
                                 dockPanel.Width = 30 + ((tabdet.X_axisvalues.Length + 1) * 35);
@@ -549,7 +549,7 @@ namespace MotronicSuite
                             //dockPanel.DockAsTab(dockPanel1);
                             dockPanel.Text = "Symbol difference: " + SymbolName + " [" + Path.GetFileName(Filename) + "]";
 
-                            dockPanel.DockTo(dockManager1, DevExpress.XtraBars.Docking.DockingStyle.Right, 0);
+                            dockPanel.DockTo(DevExpress.XtraBars.Docking.DockingStyle.Right, 0);
                             if (tabdet.X_axisvalues.Length > 0)
                             {
                                 dockPanel.Width = 30 + ((tabdet.X_axisvalues.Length + 1) * 35);
@@ -2918,7 +2918,7 @@ namespace MotronicSuite
                         tabdet.onSymbolSelect += new CompareResults.NotifySelectSymbol(tabdet_onSymbolSelect);
                         dockPanel.Controls.Add(tabdet);
                         dockPanel.Text = "Compare results: " + Path.GetFileName(filename);
-                        dockPanel.DockTo(dockManager1, DevExpress.XtraBars.Docking.DockingStyle.Left, 1);
+                        dockPanel.DockTo(DevExpress.XtraBars.Docking.DockingStyle.Left, 1);
 
                         dockPanel.Width = 500;
 
@@ -3466,7 +3466,7 @@ Axis Column: XDFTABLE_Id                 * */
             }
             if (!isDocked)
             {
-                dockPanel.DockTo(dockManager1, DevExpress.XtraBars.Docking.DockingStyle.Left, 1);
+                dockPanel.DockTo(DevExpress.XtraBars.Docking.DockingStyle.Left, 1);
                 dockPanel.Width = 700;
             }
         }
@@ -4280,7 +4280,7 @@ Axis Column: XDFTABLE_Id                 * */
                             tabdet.onSymbolSelect += new CompareResults.NotifySelectSymbol(tabdet_onSymbolSelectForFind);
                             dockPanel.Controls.Add(tabdet);
                             dockPanel.Text = "Search results: " + Path.GetFileName(FileTools.Instance.Currentfile);
-                            dockPanel.DockTo(dockManager1, DevExpress.XtraBars.Docking.DockingStyle.Left, 1);
+                            dockPanel.DockTo(DevExpress.XtraBars.Docking.DockingStyle.Left, 1);
 
                             dockPanel.Width = 700;
 
@@ -7003,7 +7003,6 @@ Axis Column: XDFTABLE_Id                 * */
                 Application.DoEvents();
                 gridControl3.DataSource = sc;
                 Application.DoEvents();
-                onlineGraphControl1.ClearData();
             }
             catch (Exception E)
             {
@@ -7029,7 +7028,6 @@ Axis Column: XDFTABLE_Id                 * */
                             break;
                         }
                     }
-                    onlineGraphControl1.ClearData();
                     gridControl3.DataSource = null;
                     Application.DoEvents();
                     gridControl3.DataSource = sc;
@@ -7196,7 +7194,6 @@ Axis Column: XDFTABLE_Id                 * */
                             }
                         }
                     }
-                    onlineGraphControl1.ClearData();
                 }
                 //gridControl3.DataSource = sc;
             }
